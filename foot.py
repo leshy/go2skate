@@ -23,8 +23,8 @@ SEAM = -27.0  # grey cup over the rubber
 # The calf's tongue (Unitree's mesh): a plate TONGUE_HALF either side of the middle, from TONGUE_BACK along to its front edge, which
 # leans out from TONGUE_FRONT at the top to its bottom; TONGUE_DEEP down, its bottom edges rounded TONGUE_R. The calf's base, an
 # oval BASE_L x BASE_W centred at BASE_U, sits on the ears' top.
-TONGUE_HALF, TONGUE_DEEP, TONGUE_R = 5.3, 17.3, 1.5
-TONGUE_BACK, TONGUE_FRONT = -20.3, ((15.0, 0.0), (21.0, -17.3))  # u; (u, w) top and bottom of its front edge
+TONGUE_HALF, TONGUE_DEEP, TONGUE_R = 5.3, 12.3, 1.5  # 5 shallower than the mesh says: the test print
+TONGUE_BACK, TONGUE_FRONT = -20.3, ((15.0, 0.0), (15.0 + 6.0 * 12.3 / 17.3, -12.3))  # u; (u, w) top and bottom of its front edge
 BASE_L, BASE_W, BASE_U = 35.5, 27.0, -2.5
 FIT = 0.2  # clearance each side of the tongue, in the slot
 SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + FIT  # the slot: open at both ends
