@@ -1,0 +1,81 @@
+"""The Go2's detachable foot end, modelled from Unitree's mesh (vendor/, unitree_mujoco) and Ivan's measurements, to build a
+wheel foot from.
+
+Frame (the foot's own): X along the slot (u), Y across it, Z up the foot's axis; the origin on the top of the ears, mid-slot.
+Unitree's calf frame (knee at the origin, foot down -z) maps into it by `TO_FOOT`: the foot's axis leans A_DEG forward of the calf's z.
+
+The real part: a grey cup (the ears either side of a slot the calf's tongue drops into, two M4 screws across through both ears
+and the tongue), a black rubber sole under it. Seam at SEAM.
+
+    .venv/bin/python foot.py      # writes foot.step, foot.stl and vendor/foot_detachable_foot_frame.stl (the mesh, same frame)
+"""
+from pathlib import Path
+
+import numpy as np
+from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRounded, Solid, Wire, export_step, export_stl,
+                       extrude, fillet, loft, Sketch)
+
+HERE = Path(__file__).parent
+A_DEG = 31.5  # the foot's axis from the calf's z, towards +x
+TO_FOOT_OFFSET = (-109.478, 0.0, 150.840)  # after the rotation, to put the origin on the ears' top, mid-slot
+
+SEAM = -27.0  # grey cup over the rubber
+SLOT_HALF, SLOT_DEEP, SLOT_R = 5.3, 18.0, 2.0  # the slot: half its width, depth from the top, its floor's corners
+EAR_EDGE_R = 5.0  # the ears' top edges, rounded
+FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
+HOLE_R, HOLE_PITCH, HOLE_DOWN, HOLE_U = 2.2, 15.0, 6.5, 0.0  # M4 clearance; 15 apart along the slot, 6.5 under the top, centred at u
+# The cup's and the sole's outlines, bottom up: (w, length along u, width across, corner radius)
+CUP = [(SEAM, 45.0, 38.0, 12.0), (-20.7, 42.5, 35.4, 12.0), (-10.8, 37.5, 32.0, 10.0), (0.0, 37.0, 28.0, 9.0)]
+SOLE = [(-52.5, 22.0, 20.0, 8.0), (-49.0, 36.0, 32.0, 12.0), (-40.3, 43.5, 39.4, 14.0), (-30.5, 45.0, 38.0, 13.0), (SEAM, 45.0, 38.0, 12.0)]
+
+
+def stack(sections):
+    return loft([Plane.XY.offset(w) * RectangleRounded(l, b, r) for w, l, b, r in sections])
+
+
+def cup():
+    part = stack(CUP)
+    (u0, w0), (u1, w1) = FRONT_SLOPE
+    n = np.array([w0 - w1, 0, u1 - u0]); n /= np.linalg.norm(n)  # out of the sloped face, up and forward
+    part -= Plane(origin=(u0, 0, w0), z_dir=tuple(n)) * Box(200, 200, 100, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    slot = Pos(0, 0, -SLOT_DEEP) * Box(200, 2 * SLOT_HALF, SLOT_DEEP + 10, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    part -= fillet(slot.edges().filter_by(Axis.X).group_by(Axis.Z)[0], SLOT_R)
+    top = part.edges().group_by(Axis.Z)[-1]
+    try:
+        part = fillet(top, EAR_EDGE_R)
+    except Exception:
+        pass  # ponytail: the ears' rounding is cosmetic; skipped if OCCT can't do it on this outline
+    holes = [Pos(HOLE_U + s * HOLE_PITCH / 2, 0, -HOLE_DOWN) * Rot(X=90) * Cylinder(HOLE_R, 60) for s in (-1, 1)]
+    return part.cut(*holes)
+
+
+def sole():
+    return stack(SOLE)
+
+
+def foot():
+    return cup() + sole()
+
+
+def mesh_in_foot_frame():
+    import trimesh
+    a = np.radians(A_DEG)
+    R = np.eye(4)
+    R[:3, :3] = [[np.cos(a), 0, -np.sin(a)], [0, 1, 0], [np.sin(a), 0, np.cos(a)]]
+    m = trimesh.load(HERE / "vendor/foot_detachable_mm.stl")
+    m.apply_transform(R)
+    m.apply_translation(TO_FOOT_OFFSET)
+    return m
+
+
+if __name__ == "__main__":
+    f = foot()
+    print(f"foot: valid {f.is_valid}, {len(f.solids())} solid, {f.volume / 1000:.1f} cm3, {f.bounding_box()}")
+    export_step(f, str(HERE / "foot.step"))
+    export_stl(f, str(HERE / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
+    c = Pos(0, 0, -SEAM) * cup()  # a fit test: the cup alone, on its seam face
+    export_stl(c, str(HERE / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
+    print(f"cup_fit_test.stl: {c.volume / 1000 * 1.27:.0f} g PETG")
+    m = mesh_in_foot_frame()
+    m.export(HERE / "vendor/foot_detachable_foot_frame.stl")
+    print("mesh in the foot frame:", m.bounds.round(1).tolist())

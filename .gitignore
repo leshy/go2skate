@@ -1,0 +1,4 @@
+.venv
+*.stl
+*.step
+!vendor/*.stl
