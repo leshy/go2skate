@@ -31,6 +31,7 @@ SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + 
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
 FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
 HOLE_R, HOLE_PITCH, HOLE_DOWN, HOLE_U = 2.2, 15.0, 6.5, 0.0  # M4 clearance; 15 apart along the slot, 6.5 under the top, centred at u
+HEAD_R, HEAD_DEEP, HEAD_SIDE = 3.5, 9.0, 1  # the screws' heads sunk this wide, this deep from the ear's outside, on the +y ear
 # The cup's and the sole's outlines, bottom up: (w, length along u, width across, corner radius)
 CUP = [(SEAM, 45.0, 38.0, 12.0), (-20.7, 42.5, 35.4, 12.0), (-10.8, 37.5, 32.0, 10.0), (0.0, 37.0, 28.0, 9.0)]
 SOLE = [(-52.5, 22.0, 20.0, 8.0), (-49.0, 36.0, 32.0, 12.0), (-40.3, 43.5, 39.4, 14.0), (-30.5, 45.0, 38.0, 13.0), (SEAM, 45.0, 38.0, 12.0)]
@@ -52,7 +53,13 @@ def cup():
         part = fillet(top, EAR_EDGE_R)
     except Exception:
         pass  # ponytail: the ears' rounding is cosmetic; skipped if OCCT can't do it on this outline
-    holes = [Pos(HOLE_U + s * HOLE_PITCH / 2, 0, -HOLE_DOWN) * Rot(X=90) * Cylinder(HOLE_R, 60) for s in (-1, 1)]
+    holes = []
+    for s in (-1, 1):
+        u = HOLE_U + s * HOLE_PITCH / 2
+        holes.append(Pos(u, 0, -HOLE_DOWN) * Rot(X=90) * Cylinder(HOLE_R, 60))
+        out = max(p[0].Y * HEAD_SIDE for p in part.find_intersection_points(Axis((u, 0, -HOLE_DOWN), (0, HEAD_SIDE, 0))))  # the ear's outside
+        holes.append(Plane(origin=(u, HEAD_SIDE * (out - HEAD_DEEP), -HOLE_DOWN), z_dir=(0, HEAD_SIDE, 0)) * Cylinder(HEAD_R, 20, align=(Align.CENTER, Align.CENTER, Align.MIN)))
+        print(f"head pocket at u {u:+.1f}: ear's outside y {out:.2f}, {out - HEAD_DEEP - SLOT_HALF:.2f} of the ear left under it")
     return part.cut(*holes)
 
 
