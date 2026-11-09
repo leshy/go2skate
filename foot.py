@@ -26,6 +26,7 @@ SEAM = -27.0  # grey cup over the rubber
 TONGUE_HALF, TONGUE_DEEP, TONGUE_R = 5.3, 12.3, 1.5  # 5 shallower than the mesh says: the test print
 TONGUE_BACK, TONGUE_FRONT = -20.3, ((15.0, 0.0), (15.0 + 6.0 * 12.3 / 17.3, -12.3))  # u; (u, w) top and bottom of its front edge
 BASE_L, BASE_W, BASE_U = 35.5, 27.0, -2.5
+TEST_FLOOR = 2.0  # the fit test's floor under the slot
 FIT = 0.2  # clearance each side of the tongue, in the slot
 SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + FIT  # the slot: open at both ends
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
@@ -98,7 +99,8 @@ if __name__ == "__main__":
     print(f"foot: valid {f.is_valid}, {len(f.solids())} solid, {f.volume / 1000:.1f} cm3, {f.bounding_box()}")
     export_step(f, str(HERE / "foot.step"))
     export_stl(f, str(HERE / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
-    c = Pos(0, 0, -SEAM) * cup()  # a fit test: the cup alone, on its seam face
+    low = -(SLOT_DEEP + TEST_FLOOR)  # a fit test: the cup cut off TEST_FLOOR under the slot, standing on that face
+    c = Pos(0, 0, -low) * (cup() & Pos(0, 0, low) * Box(200, 200, 100, align=(Align.CENTER, Align.CENTER, Align.MIN)))
     export_stl(c, str(HERE / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
     print(f"cup_fit_test.stl: {c.volume / 1000 * 1.27:.0f} g PETG")
     t = tongue()
