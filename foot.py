@@ -12,7 +12,7 @@ and the tongue), a black rubber sole under it. Seam at SEAM.
 from pathlib import Path
 
 import numpy as np
-from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRounded, Solid, Wire, export_step, export_stl,
+from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRounded, RegularPolygon, Solid, Wire, export_step, export_stl,
                        extrude, fillet, loft, Sketch)
 
 HERE = Path(__file__).parent
@@ -32,7 +32,8 @@ SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + 
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
 FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
 HOLE_R, HOLE_PITCH, HOLE_DOWN, HOLE_U = 2.2, 15.5, 5.5, 0.0  # M4 clearance; 15.5 apart along the slot, 5.5 under the top (test print 1), centred at u
-HEAD_R, HEAD_DEEP, HEAD_SIDE = 3.5, 9.0, 1  # the screws' heads sunk this wide, this deep from the ear's outside, on the +y ear
+HEAD_R, HEAD_DEEP, HEAD_SIDE = 3.75, 9.0, 1  # the screws' heads sunk this wide, this deep from the ear's outside, on the +y ear
+NUT_AF, NUT_DEEP = 7.3, 9.0  # an M4 nut (7 across flats) slid into a hex pocket in the other ear, a corner up: it prints without support
 # The cup's and the sole's outlines, bottom up: (w, length along u, width across, corner radius)
 CUP = [(SEAM, 45.0, 38.0, 12.0), (-20.7, 42.5, 35.4, 12.0), (-10.8, 37.5, 32.0, 10.0), (0.0, 37.0, 28.0, 9.0)]
 SOLE = [(-52.5, 22.0, 20.0, 8.0), (-49.0, 36.0, 32.0, 12.0), (-40.3, 43.5, 39.4, 14.0), (-30.5, 45.0, 38.0, 13.0), (SEAM, 45.0, 38.0, 12.0)]
@@ -61,6 +62,10 @@ def cup():
         out = max(p[0].Y * HEAD_SIDE for p in part.find_intersection_points(Axis((u, 0, -HOLE_DOWN), (0, HEAD_SIDE, 0))))  # the ear's outside
         holes.append(Plane(origin=(u, HEAD_SIDE * (out - HEAD_DEEP), -HOLE_DOWN), z_dir=(0, HEAD_SIDE, 0)) * Cylinder(HEAD_R, 20, align=(Align.CENTER, Align.CENTER, Align.MIN)))
         print(f"head pocket at u {u:+.1f}: ear's outside y {out:.2f}, {out - HEAD_DEEP - SLOT_HALF:.2f} of the ear left under it")
+        out = max(-p[0].Y * HEAD_SIDE for p in part.find_intersection_points(Axis((u, 0, -HOLE_DOWN), (0, -HEAD_SIDE, 0))))  # the other ear's outside
+        holes.append(Plane(origin=(u, -HEAD_SIDE * (out - NUT_DEEP), -HOLE_DOWN), x_dir=(0, 0, 1), z_dir=(0, -HEAD_SIDE, 0))
+                     * extrude(RegularPolygon(NUT_AF / np.sqrt(3), 6), 20))
+        print(f"nut pocket at u {u:+.1f}: ear's outside y {-out:.2f}, {out - NUT_DEEP - SLOT_HALF:.2f} of the ear left under it")
     return part.cut(*holes)
 
 
