@@ -20,7 +20,14 @@ A_DEG = 31.5  # the foot's axis from the calf's z, towards +x
 TO_FOOT_OFFSET = (-109.478, 0.0, 150.840)  # after the rotation, to put the origin on the ears' top, mid-slot
 
 SEAM = -27.0  # grey cup over the rubber
-SLOT_HALF, SLOT_DEEP, SLOT_R = 5.3, 18.0, 2.0  # the slot: half its width, depth from the top, its floor's corners
+# The calf's tongue (Unitree's mesh): a plate TONGUE_HALF either side of the middle, from TONGUE_BACK along to its front edge, which
+# leans out from TONGUE_FRONT at the top to its bottom; TONGUE_DEEP down, its bottom edges rounded TONGUE_R. The calf's base, an
+# oval BASE_L x BASE_W centred at BASE_U, sits on the ears' top.
+TONGUE_HALF, TONGUE_DEEP, TONGUE_R = 5.3, 17.3, 1.5
+TONGUE_BACK, TONGUE_FRONT = -20.3, ((15.0, 0.0), (21.0, -17.3))  # u; (u, w) top and bottom of its front edge
+BASE_L, BASE_W, BASE_U = 35.5, 27.0, -2.5
+FIT = 0.2  # clearance each side of the tongue, in the slot
+SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + FIT  # the slot: open at both ends
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
 FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
 HOLE_R, HOLE_PITCH, HOLE_DOWN, HOLE_U = 2.2, 15.0, 6.5, 0.0  # M4 clearance; 15 apart along the slot, 6.5 under the top, centred at u
@@ -47,6 +54,17 @@ def cup():
         pass  # ponytail: the ears' rounding is cosmetic; skipped if OCCT can't do it on this outline
     holes = [Pos(HOLE_U + s * HOLE_PITCH / 2, 0, -HOLE_DOWN) * Rot(X=90) * Cylinder(HOLE_R, 60) for s in (-1, 1)]
     return part.cut(*holes)
+
+
+def tongue():
+    """The calf's tongue, for checks: what the slot takes."""
+    (u0, w0), (u1, w1) = TONGUE_FRONT
+    side = [(TONGUE_BACK, 0.0), (u0, w0), (u1, w1), (TONGUE_BACK, w1)]
+    from build123d import Polygon
+    plate = extrude(Plane.XZ * Polygon(*side, align=None), TONGUE_HALF, both=True)
+    plate = fillet(plate.edges().filter_by(Axis.Y, reverse=True).group_by(Axis.Z)[0], TONGUE_R)
+    holes = [Pos(HOLE_U + s * HOLE_PITCH / 2, 0, -HOLE_DOWN) * Rot(X=90) * Cylinder(HOLE_R - 0.2, 60) for s in (-1, 1)]  # tapped M4
+    return plate.cut(*holes)
 
 
 def sole():
@@ -76,6 +94,9 @@ if __name__ == "__main__":
     c = Pos(0, 0, -SEAM) * cup()  # a fit test: the cup alone, on its seam face
     export_stl(c, str(HERE / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
     print(f"cup_fit_test.stl: {c.volume / 1000 * 1.27:.0f} g PETG")
+    t = tongue()
+    export_stl(t, str(HERE / "tongue.stl"), tolerance=0.02, angular_tolerance=0.1)
+    print(f"tongue: valid {t.is_valid}, {t.bounding_box()}; in the cup {getattr(t & cup(), "volume", 0.0):.3f} mm3")
     m = mesh_in_foot_frame()
     m.export(HERE / "vendor/foot_detachable_foot_frame.stl")
     print("mesh in the foot frame:", m.bounds.round(1).tolist())
