@@ -9,23 +9,21 @@ Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulatio
 
 ## Generate models
 
-Everything is built from one config: `go2skate/config.py` (the wheel's size, tread and mass, the bearings, the axle, the toe-out
-angle, the fit, the fork's shape, and the physics the simulation uses).
+1. Edit `go2skate/config.py` to configure wheels, mass, bearings, axle etc
 
-```
-uv run go2skate build                  # print/ (STL), models/ (STEP), sim/generated/ (MuJoCo)
-uv run go2skate build --stock          # also the stock foot and a fit-test cup to print first (print/cup_fit_test.stl)
-uv run go2skate view                   # MuJoCo's viewer, the robot standing on its wheels
-```
+2. Run the viewer
+`uv run python -m ocp_viewer --port 3939` browse to http://localhost:3939/viewer
 
-### Viewer
+3. Generate print/ (STL), models/ (STEP), sim/generated/ (MuJoCo)
+`uv run go2skate build --show`
 
-For the CAD viewer
+You can check the stock foot and a fit-test cup (print/cup_fit_test.stl)
+`uv run go2skate build --stock` 
 
-``` sh
-uv run python -m ocp_viewer --port 3939 # browse to http://localhost:3939/viewer.
-uv run go2skate build --show            # show FL foot
-```
+4. view in mujoco 
+`uv run go2skate view`
+
+## CLI
 
 Change any setting for one build with `--set`, by its dotted name, and write somewhere else with `--out`:
 
@@ -36,6 +34,8 @@ uv run go2skate check --out builds/72mm
 
 The four feet come out labelled FL, FR, RL, RR (print one each): left and right are mirror images once the wheels toe out.
 
+## Sim files
+
 The simulation, in `sim/generated/`:
 
 |             |                                                                                                                                                |
@@ -44,7 +44,7 @@ The simulation, in `sim/generated/`:
 | `spec.json` | the same geometry and physics as numbers: each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction |
 | `meshes/`   | the visual meshes the MJCF loads                                                                                                               |
 
-Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`): exact upright for the round tread, a few
+Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`), exact upright for the round tread, a few
 mm off as it leans hard, and the fastest. `--set sim.wheel_collision=hull` uses a convex hull of the tread (within 0.3 mm at any
 lean), `mesh` the CAD wheel itself; both cost more contact time. `spec.json` has the exact tread to build your own.
 
