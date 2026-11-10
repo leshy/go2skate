@@ -27,7 +27,11 @@ tooling, not of the Unitree-contributed model.)
 sha256 of the sorted per-file manifest (`sha256  relpath` lines, LF-joined,
 every file except this one):
 
-    4ef7ea987b7636c53b7c93910eacdf6e5c0cb763e9f3a7b241674b2c2f1d4a9b
+    ea91fde0e64a51b9d6a5df52696a0cffe519a6f9e6223cd341b7a82d630074ca
+
+(Trimmed for go2skate, 2026-11-10: go2.png, go2_mjx.png, go2_mjx.xml and scene_mjx.xml
+removed, unused here; every remaining file is still byte-identical to upstream. The
+full subtree's hash was 4ef7ea987b7636c53b7c93910eacdf6e5c0cb763e9f3a7b241674b2c2f1d4a9b.)
 
 Recompute with:
 
