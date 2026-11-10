@@ -2,7 +2,7 @@
 name = "go2skate"
 version = "0.1.0"
 description = "Inline-skate wheel feet for the Unitree Go2: the printed part, and the MuJoCo model generated from it"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "build123d==0.12.*",
     "cadquery-ocp==7.9.3.*",
