@@ -1,6 +1,6 @@
 """Everything about the skate you might change: the wheel, its bearings and axle, the toe angle, how the fork fits round them,
 and the physics the simulation gives them. Change a default here and rerun `go2skate build`, or pass your own Skate(...) to
-go2skate.build(), or override fields on the command line: `go2skate build --set toe_out_deg=20 --set wheel.diameter=72`.
+go2skate.build(), or override fields on the command line: `go2skate build --set toe_deg=20,-20,20,-20 --set wheel.diameter=72`.
 
 Lengths in mm unless a name says otherwise.
 """
@@ -35,16 +35,20 @@ class Axle:
     """A two-piece inline-skate axle (or a bolt) through both arms."""
     d: float = 8.0  # its hole in the arms is this plus Skate.fit each side
     length: float = 38.0  # under its heads, measured: the arms are made this plus `play` wide outside to outside
-    play: float = 0.3  # so it clamps the stack before its halves bottom out
+    play: float = 0.3  # so tightening it clamps the arms onto the stack (a two-piece axle: before its halves bottom out)
     head_d: float = 15.0  # its heads: each arm's outside is flat round the hole this wide, plus `seat_margin` all round
     seat_margin: float = 1.0
 
 
 @dataclass(frozen=True)
 class Screws:
-    """The two M4s across the foot's ears and the calf's tongue: holes and head pockets are these plus Skate.fit each side."""
+    """The two M4s across the foot's ears and the calf's tongue: holes, head and nut pockets are these plus `fit` each side."""
     d: float = 4.0
     head_d: float = 7.0  # socket cap
+    nut: bool = True  # a hex nut sunk in the far ear; False: a 4 mm heat-set insert there instead
+    nut_af: float = 7.0  # M4 nut (ISO 4032): across flats, thick
+    nut_h: float = 3.2
+    fit: float = 0.15  # clearance a side, looser than Skate.fit: holes 4.3, head pocket 7.3, nut 7.3 across flats
 
 
 @dataclass(frozen=True)
@@ -84,10 +88,11 @@ class Skate:
     screws: Screws = field(default_factory=Screws)
     fork: Fork = field(default_factory=Fork)
     sim: Sim = field(default_factory=Sim)
-    fit: float = 0.025  # clearance a side for printed fits (axle and screw holes, head pockets): tuned on the H2S with top_mount's
+    fit: float = 0.025  # clearance a side for printed fits (the axle holes; the M4s have Screws.fit): tuned on the H2S with top_mount's
     # fit_test.py. Not the heat-set inserts' holes (their maker's size) or the calf tongue's slot (foot.FIT, proven by a test print)
-    toe_out_deg: float = 30.0  # each wheel turned about the foot's own axis (~14° off vertical standing), its front away from the
-    # body's centre line, like a skater's V; non-zero makes left and right feet mirror images
+    toe_deg: tuple = (30.0, -30.0, 30.0, -30.0)  # FL, FR, RL, RR: each wheel turned about its foot's own axis (~14° off vertical
+    # standing), + turns its front to the robot's left. V, every toe out like a skater's: (30, -30, 30, -30). X, each diagonal pair
+    # on one line through the body's middle: (30, -30, -30, 30). All 0: straight
     label: bool = True  # engrave each foot's leg (FL, FR, RL, RR) and an arrow to the robot's front on its fork's outer side
     label_size: float = 6.0  # the text's height
     label_depth: float = 0.6

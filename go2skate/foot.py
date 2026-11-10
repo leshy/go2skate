@@ -46,10 +46,11 @@ SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + 
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
 FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
 HOLE_PITCH, HOLE_DOWN, HOLE_U = 15.5, 5.5, 0.0  # 15.5 apart along the slot, 5.5 under the top (test print 1), centred at u
-HOLE_R = C.screws.d / 2 + C.fit  # the M4s' holes
-HEAD_R = C.screws.head_d / 2 + C.fit
+HOLE_R = C.screws.d / 2 + C.screws.fit  # the M4s' holes
+HEAD_R = C.screws.head_d / 2 + C.screws.fit
 HEAD_DEEP, HEAD_SIDE = 4.0, 1  # the screws' heads sunk this deep from the ear's outside, on the +y ear
-INSERT_R, INSERT_DEEP = 2.75, 4.0  # a 4 mm M4 heat-set insert pressed into the other ear from outside, flush: as much plastic behind it as behind the head
+NUT_DEEP = 4.5  # the nut sunk this deep in the far ear (its 3.2 1.3 under the face): an M4 x 25 just comes through it
+INSERT_R, INSERT_DEEP = 2.75, 4.0  # or a 4 mm M4 heat-set insert pressed into the other ear from outside, flush: as much plastic behind it as behind the head
 # The cup's and the sole's outlines, bottom up: (w, length along u, width across, corner radius)
 CUP = [(SEAM, 45.0, 38.0, 12.0), (-20.7, 42.5, 35.4, 12.0), (-10.8, 37.5, 32.0, 10.0), (0.0, 37.0, 28.0, 9.0)]
 SOLE = [(-52.5, 22.0, 20.0, 8.0), (-49.0, 36.0, 32.0, 12.0), (-40.3, 43.5, 39.4, 14.0), (-30.5, 45.0, 38.0, 13.0), (SEAM, 45.0, 38.0, 12.0)]
@@ -79,8 +80,13 @@ def cup():
         holes.append(Plane(origin=(u, HEAD_SIDE * (out - HEAD_DEEP), -HOLE_DOWN), z_dir=(0, HEAD_SIDE, 0)) * Cylinder(HEAD_R, 20, align=(Align.CENTER, Align.CENTER, Align.MIN)))
         print(f"head pocket at u {u:+.1f}: ear's outside y {out:.2f}, {out - HEAD_DEEP - SLOT_HALF:.2f} of the ear left under it")
         out = max(-p[0].Y * HEAD_SIDE for p in part.find_intersection_points(Axis((u, 0, -HOLE_DOWN), (0, -HEAD_SIDE, 0))))  # the other ear's outside
-        holes.append(Plane(origin=(u, -HEAD_SIDE * (out - INSERT_DEEP), -HOLE_DOWN), z_dir=(0, -HEAD_SIDE, 0)) * Cylinder(INSERT_R, 20, align=(Align.CENTER, Align.CENTER, Align.MIN)))
-        print(f"insert hole at u {u:+.1f}: {INSERT_DEEP} deep, {out - INSERT_DEEP - SLOT_HALF:.2f} of the ear left under it")
+        deep = NUT_DEEP if C.screws.nut else INSERT_DEEP
+        far = Plane(origin=(u, -HEAD_SIDE * (out - deep), -HOLE_DOWN), x_dir=(0, 0, 1), z_dir=(0, -HEAD_SIDE, 0))
+        if C.screws.nut:  # corners up and down: as printed (on its back), the pocket's roof is a 60° peak, no support
+            holes.append(extrude(far * RegularPolygon(C.screws.nut_af / 2 + C.screws.fit, 6, major_radius=False), 20))
+        else:
+            holes.append(far * Cylinder(INSERT_R, 20, align=(Align.CENTER, Align.CENTER, Align.MIN)))
+        print(f"{'nut' if C.screws.nut else 'insert'} pocket at u {u:+.1f}: {deep} deep, {out - deep - SLOT_HALF:.2f} of the ear left under it")
     return part.cut(*holes)
 
 

@@ -4,10 +4,10 @@
     from go2skate import Skate, Wheel
 
     go2skate.build()                                              # the defaults, into the current directory
-    go2skate.build(Skate(toe_out_deg=20, wheel=Wheel(diameter=72)), out="assets/skate")
+    go2skate.build(Skate(toe_deg=(20, -20, 20, -20), wheel=Wheel(diameter=72)), out="assets/skate")
 
 writes <out>/print/ (STL to print), <out>/models/ (STEP) and <out>/sim/generated/ (go2skate.xml, scene.xml, meshes/,
-spec.json). The command line does the same: `go2skate build --set toe_out_deg=20 --out assets/skate`.
+spec.json). The command line does the same: `go2skate build --set toe_deg=20,-20,20,-20 --out assets/skate`.
 """
 import importlib
 from pathlib import Path

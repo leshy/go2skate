@@ -1,12 +1,12 @@
 """go2skate build | check | view
 
     go2skate build                                    # the defaults, into the current directory
-    go2skate build --set toe_out_deg=20 --set wheel.diameter=72 --out assets/skate
+    go2skate build --set toe_deg=20,-20,20,-20 --set wheel.diameter=72 --out assets/skate
     go2skate build --no-sim --show                    # just the parts, the FL foot in the OCP viewer
     go2skate check                                    # touch down, set the standing height, stand for a second
     go2skate view                                     # MuJoCo's viewer, the robot standing on its wheels
 
---set takes any field of config.Skate by its dotted name (wheel.width, axle.length, fork.end_r, toe_out_deg, fit, ...).
+--set takes any field of config.Skate by its dotted name (wheel.width, axle.length, fork.end_r, toe_deg, fit, ...).
 """
 import argparse
 import dataclasses

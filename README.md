@@ -28,11 +28,25 @@ You can check the stock foot and a fit-test cup (print/cup_fit_test.stl)
 Change any setting for one build with `--set`, by its dotted name, and write somewhere else with `--out`:
 
 ```
-uv run go2skate build --set toe_out_deg=20 --set wheel.diameter=72 --set fork.end_r=18 --out builds/72mm
+uv run go2skate build --set toe_deg=20,-20,20,-20 --set wheel.diameter=72 --set fork.end_r=18 --out builds/72mm
 uv run go2skate check --out builds/72mm
 ```
 
-The four feet come out labelled FL, FR, RL, RR (print one each): left and right are mirror images once the wheels toe out.
+The four feet come out labelled FL, FR, RL, RR (print one each), each turned its own way.
+
+## Wheel layouts
+
+`toe_deg` turns each wheel about its foot's axis, in the order FL, FR, RL, RR. Positive turns the wheel's front to the robot's left. Seen from above, front up:
+
+```
+V (default)  toe_deg=30,-30,30,-30     X            toe_deg=30,-30,-30,30
+   FL \   / FR                            FL \   / FR
+   RL \   / RR                            RL /   \ RR
+```
+
+- **V**: every wheel toes out, like a skater's stance. Turns easily.
+- **X**: each diagonal pair (FL with RR, FR with RL) lies on one line through the body's middle. Every wheel rolls towards or away from the middle, so the robot resists turning on the spot.
+- **All 0**: the wheels run straight.
 
 ## Sim files
 
@@ -62,11 +76,11 @@ and build the skate you want into your own tree, from Python:
 import go2skate
 from go2skate import Skate, Wheel
 
-out = go2skate.build(Skate(toe_out_deg=20, wheel=Wheel(diameter=72)), out="assets/go2skate", cad=False)
+out = go2skate.build(Skate(toe_deg=(20, -20, 20, -20), wheel=Wheel(diameter=72)), out="assets/go2skate", cad=False)
 # out / "sim/generated/scene.xml", out / "sim/generated/spec.json", ...
 ```
 
-or from the command line: `go2skate build --set toe_out_deg=20 --out assets/go2skate --no-cad`. `cad=False` (`--no-cad`) skips
+or from the command line: `go2skate build --set toe_deg=20,-20,20,-20 --out assets/go2skate --no-cad`. `cad=False` (`--no-cad`) skips
 the printable parts
 
 ## BOM
@@ -78,9 +92,10 @@ For one robot (four wheel feet), with the default config:
 | Inline-skate wheel | **80 mm** diameter, about **24 mm** wide (designed for 24.5)                     | 4   |
 | Bearing            | **608** (8 x 22 x 7 mm), shielded: the standard skate bearing, two per wheel     | 8   |
 | Bearing spacer     | 8 mm bore, sits inside the wheel's hub between the two bearings                  | 4   |
-| Axle               | 8 mm **two-piece inline-skate axle**, **38 mm** under the heads, heads up to 15 mm| 4   |
+| Axle               | **M8 x 55 hex bolt**, partly threaded (ISO 4014, plain shank through both bearings) + M8 nyloc nut, clamping **38 mm** between the washers. Or an 8 mm two-piece skate axle, 38 mm under the heads | 4   |
+| Washer             | M8, 16 mm (DIN 125), under the head and the nut                                  | 8   |
 | Screw              | M4 x 25 socket cap: two per foot, across through both ears and the calf's tongue | 8   |
-| Heat-set insert    | M4, 4 mm long (5.5 mm hole), pressed into the far ear                            | 8   |
+| Nut                | M4 hex nut (ISO 4032, 7 mm across flats, 3.2 thick), sunk in the far ear. Or `--set screws.nut=false` for M4 x 4 mm heat-set inserts | 8   |
 
 Different wheel or axle? Measure it, set it in the config (or `--set`) and rebuild. A wheel much bigger than 80 mm makes the legs effectively
 longer: the wheel's bottom is already 48.5 mm under the stock foot's.
