@@ -14,10 +14,17 @@ angle, the fit, the fork's shape, and the physics the simulation uses).
 
 ```
 uv run go2skate build                  # print/ (STL), models/ (STEP), sim/generated/ (MuJoCo)
-uv run go2skate build --show           # and the FL foot in the CAD viewer
 uv run go2skate build --stock          # also the stock foot and a fit-test cup to print first (print/cup_fit_test.stl)
-uv run go2skate check                  # loads the model, sets the standing height so the wheels touch, stands for a second
 uv run go2skate view                   # MuJoCo's viewer, the robot standing on its wheels
+```
+
+### Viewer
+
+For the CAD viewer
+
+``` sh
+uv run python -m ocp_viewer --port 3939 # browse to http://localhost:3939/viewer.
+uv run go2skate build --show            # show FL foot
 ```
 
 Change any setting for one build with `--set`, by its dotted name, and write somewhere else with `--out`:
@@ -28,15 +35,14 @@ uv run go2skate check --out builds/72mm
 ```
 
 The four feet come out labelled FL, FR, RL, RR (print one each): left and right are mirror images once the wheels toe out.
-For the CAD viewer, start it once with `uv run python -m ocp_viewer --port 3939` and browse to http://localhost:3939/viewer.
 
 The simulation, in `sim/generated/`:
 
-| | |
-|---|---|
-| `scene.xml` | the robot on its wheels, on a floor (`go2skate.xml` without the floor): Menagerie's Go2 with its feet swapped |
+|             |                                                                                                                                                |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `scene.xml` | the robot on its wheels, on a floor (`go2skate.xml` without the floor): Menagerie's Go2 with its feet swapped                                  |
 | `spec.json` | the same geometry and physics as numbers: each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction |
-| `meshes/` | the visual meshes the MJCF loads |
+| `meshes/`   | the visual meshes the MJCF loads                                                                                                               |
 
 Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`): exact upright for the round tread, a few
 mm off as it leans hard, and the fastest. `--set sim.wheel_collision=hull` uses a convex hull of the tread (within 0.3 mm at any
@@ -61,8 +67,7 @@ out = go2skate.build(Skate(toe_out_deg=20, wheel=Wheel(diameter=72)), out="asset
 ```
 
 or from the command line: `go2skate build --set toe_out_deg=20 --out assets/go2skate --no-cad`. `cad=False` (`--no-cad`) skips
-the printable parts; the model is still built from the CAD solid, which gives its masses and inertias, so the CAD dependencies come
-along (`uv` installs them).
+the printable parts
 
 ## BOM
 
