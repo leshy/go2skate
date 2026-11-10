@@ -83,6 +83,19 @@ def wheel():
     return sweep(0.0, hub=False)
 
 
+BEARING_D, BEARING_W = 22.0, 7.0  # a 608: 8 bore
+
+
+def hardware():
+    """For looks: a 608 pressed into each side of the wheel's hub, flush with its faces, the spacer between, the axle through."""
+    ring = lambda r0, r1, y0, y1: Pos(0, (y0 + y1) / 2, AXLE_W) * Rot(X=90) * (Cylinder(r1, y1 - y0) - Cylinder(r0, y1 - y0))
+    h = WHEEL_W / 2
+    parts = [ring(AXLE_D / 2 - 0.1, BEARING_D / 2, s * h - (s > 0) * BEARING_W, s * h + (s < 0) * BEARING_W) for s in (1, -1)]
+    parts.append(ring(AXLE_D / 2 - 0.1, 5.0, -h + BEARING_W, h - BEARING_W))  # the spacer
+    parts.append(Pos(0, 0, AXLE_W) * Rot(X=90) * Cylinder(4.0, 2 * OUTER + 4))  # the axle
+    return [turned(q) for q in parts]
+
+
 if __name__ == "__main__":
     p = wheel_foot()
     print(f"wheel foot: valid {p.is_valid}, {len(p.solids())} solid, {p.volume / 1000 * 1.27:.0f} g PETG; axle at w {AXLE_W:.1f}, "
@@ -95,4 +108,6 @@ if __name__ == "__main__":
     set_port(3939)
     w.color, p.color = "dimgray", "orange"
     t = F.tongue(); t.color = "steelblue"
-    show(p, w, t, names=["wheel_foot", "wheel", "calf_tongue"])
+    hw = hardware()
+    show(p, w, t, *hw, names=["wheel_foot", "wheel", "calf_tongue", "608_left", "608_right", "spacer", "axle"],
+         colors=["orange", "dimgray", "steelblue", "gold", "gold", "silver", "silver"], alphas=[1, 0.35, 1, 1, 1, 1, 1])
