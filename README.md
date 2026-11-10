@@ -33,6 +33,24 @@ sim/generated/meshes/
 
 `uv run python sim/view.py` runs mujoco
 
+## Using it from another project
+
+The generated simulation is plain files, so a training repo doesn't need this project's Python (or its CAD kernel) to use
+it. Add the repo as a git submodule pinned to a commit and load straight from `sim/generated/`:
+
+```
+git submodule add https://github.com/leshy/go2skate third_party/go2skate
+```
+
+- `third_party/go2skate/sim/generated/scene.xml`: the robot on its wheels, on a floor (`go2skate.xml` without the floor)
+- `third_party/go2skate/sim/generated/spec.json`: the same geometry and physics as numbers, to build your own model from:
+  each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction
+- `third_party/go2skate/sim/generated/meshes/`: the visual meshes the MJCF loads
+
+Bump the submodule to pick up a new version. For other settings (toe angle, wheel size, ...), clone it, edit `config.py`, and
+run `uv run python wheel_foot.py` and `uv run python sim/gen_mjcf.py`: the masses and inertias come from the CAD solid, so
+regenerating needs the CAD dependencies, which `uv` installs.
+
 ## BOM
 
 For one robot (four wheel feet), with the defaults in `config.py`:
