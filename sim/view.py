@@ -12,7 +12,7 @@ import mujoco.viewer
 HERE = Path(__file__).parent
 KP, KD = 40.0, 1.0  # Menagerie's actuators are torque motors: this is the low-level loop a policy would sit on
 
-model = mujoco.MjModel.from_xml_path(str(HERE / "scene.xml"))
+model = mujoco.MjModel.from_xml_path(str(HERE / "generated/scene.xml"))
 data = mujoco.MjData(model)
 key = model.key("home").id
 mujoco.mj_resetDataKeyframe(model, data, key)

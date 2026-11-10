@@ -10,12 +10,13 @@ cup (the bottom of calf_0), drawn instead with our calf cut off at the cup (vend
 Left legs (FL, RL) get the left foot, right legs its mirror image. The 'home' keyframe keeps Menagerie's joint angles; check.py
 raises its base until the wheels just touch the floor.
 
-Writes, next to this file: go2skate.xml, scene.xml (floor + the robot), meshes/*.stl (metres, in the calf or wheel frame),
-spec.json (the same numbers for whoever trains on it).
+Writes everything into generated/ (don't edit it, rerun this): go2skate.xml, scene.xml (floor + the robot), meshes/*.stl
+(metres, in the calf or wheel frame), spec.json (the same numbers for whoever trains on it).
 
     uv run python sim/gen_mjcf.py       # then: uv run python sim/check.py, uv run python sim/view.py
 """
 import json
+import os
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -31,6 +32,7 @@ import wheel_foot as W  # noqa: E402
 from config import SKATE as C  # noqa: E402
 
 MENAGERIE = HERE / "vendor/go2_menagerie/unitree_go2"
+OUT = HERE / "generated"
 LEGS = ("FL", "FR", "RL", "RR")
 SIDE = {"FL": "left", "RL": "left", "FR": "right", "RR": "right"}
 MIRROR = np.diag([1.0, -1.0, 1.0])  # left to right: the calf frames are alike, the feet mirror about the leg's plane
@@ -70,8 +72,8 @@ def vec(v):
 
 
 def build():
-    out = HERE / "meshes"
-    out.mkdir(exist_ok=True)
+    out = OUT / "meshes"
+    out.mkdir(parents=True, exist_ok=True)
     for old in out.glob("*.stl"):
         old.unlink()
     T = calf_from_foot()
@@ -102,7 +104,7 @@ def build():
     root.find("compiler").set("meshdir", ".")
     asset = root.find("asset")
     for m in asset.findall("mesh"):  # Menagerie's own meshes, where they are vendored
-        m.set("file", str((MENAGERIE / "assets" / m.get("file")).relative_to(HERE)))
+        m.set("file", os.path.relpath(MENAGERIE / "assets" / m.get("file"), OUT))
     for name in ("skate_left", "skate_right", "wheel_left", "wheel_right", "calf_upper", "calf_upper_mirror"):
         ET.SubElement(asset, "mesh", name=name, file=f"meshes/{name}.stl")
     ET.SubElement(asset, "material", name="petg", rgba="0.95 0.55 0.15 1")
@@ -133,12 +135,12 @@ def build():
     legs = [q[7 + 3 * i:10 + 3 * i] + ["0"] for i in range(len(LEGS))]  # each wheel's angle follows its own leg's three joints
     key.set("qpos", " ".join(q[:7] + [v for leg in legs for v in leg]))
     ET.indent(tree)
-    tree.write(HERE / "go2skate.xml")
+    tree.write(OUT / "go2skate.xml")
 
     scene = ET.parse(MENAGERIE / "scene.xml")
     scene.getroot().set("model", "go2skate scene")
     scene.getroot().find("include").set("file", "go2skate.xml")
-    scene.write(HERE / "scene.xml")
+    scene.write(OUT / "scene.xml")
 
     rounded = lambda a: np.round(np.asarray(a, dtype=float), 8).tolist()
     spec = {
@@ -169,7 +171,7 @@ def build():
                   "bracket mass is solid PETG (an upper bound: infill makes it lighter)",
                   "wheel mass and friction are estimates (config.py); masses, centre and inertias come from the CAD"],
     }
-    (HERE / "spec.json").write_text(json.dumps(spec, indent=2) + "\n")
+    (OUT / "spec.json").write_text(json.dumps(spec, indent=2) + "\n")
     print(f"wheel centre in the calf frame {np.round(centre * 1000, 1)} mm (stock foot ball (-2, 0, -213)); toe out {W.TOE:g}°, "
           f"left axle {np.round(axle, 3)}; skate {skate_mass * 1000:.0f} g, wheel {C.wheel.mass_kg * 1000:.0f} g")
 

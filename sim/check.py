@@ -25,7 +25,7 @@ def lowest(model, data):
     return out
 
 
-model = mujoco.MjModel.from_xml_path(str(HERE / "scene.xml"))
+model = mujoco.MjModel.from_xml_path(str(HERE / "generated/scene.xml"))
 data = mujoco.MjData(model)
 k = model.key("home").id
 mujoco.mj_resetDataKeyframe(model, data, k)
@@ -35,12 +35,12 @@ z = data.qpos[2] - min(low.values())
 print("wheels' lowest points at the keyframe's base height:", {k_: round(v, 4) for k_, v in low.items()})
 print(f"base height for the wheels to touch: {z:.4f} m (stock feet: 0.27)")
 
-xml = HERE / "go2skate.xml"
+xml = HERE / "generated/go2skate.xml"
 text = xml.read_text()
 text = re.sub(r'(<key name="home" qpos=")(\S+) (\S+) (\S+)', lambda m: f"{m.group(1)}{m.group(2)} {m.group(3)} {z:.4f}", text, count=1)
 xml.write_text(text)
 
-model = mujoco.MjModel.from_xml_path(str(HERE / "scene.xml"))
+model = mujoco.MjModel.from_xml_path(str(HERE / "generated/scene.xml"))
 data = mujoco.MjData(model)
 mujoco.mj_resetDataKeyframe(model, data, model.key("home").id)
 KP, KD = 40.0, 1.0  # Menagerie's actuators are torque motors: hold 'home' with PD, as Go2 policies' low-level loop does
