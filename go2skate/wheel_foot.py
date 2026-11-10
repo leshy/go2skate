@@ -19,6 +19,7 @@ import numpy as np
 from build123d import (Align, Axis, Box, Cone, Cylinder, GeomType, Plane, Polygon, Pos, RectangleRounded, Rot, export_step, export_stl,
                       extrude, loft, Torus)
 
+from . import config
 from . import foot as F
 from .config import SKATE as C
 
@@ -135,7 +136,7 @@ def label_cutter(leg):
     plane = Plane(origin=(0, s * (OUTER - d), v), x_dir=(-s, 0, 0), z_dir=(0, s, 0))  # upright, read from outside
     h = C.label_size
     fwd = -s  # +X (the robot's front), in the plane's own x
-    text = plane * Pos(-fwd * 0.45 * h, 0) * Text(leg, font_size=h)
+    text = plane * Pos(-fwd * 0.45 * h, 0) * Text(leg, font_size=h, font_path=str(config.DATA / "DejaVuSans-Bold.ttf"))  # bundled: the same letters on any machine
     arrow = plane * Pos(fwd * 0.75 * h, 0) * Polygon(*[(fwd * x, y) for x, y in
                                                        [(-0.55 * h, 0.12 * h), (0.15 * h, 0.12 * h), (0.15 * h, 0.35 * h), (0.6 * h, 0.0),
                                                         (0.15 * h, -0.35 * h), (0.15 * h, -0.12 * h), (-0.55 * h, -0.12 * h)]], align=None)

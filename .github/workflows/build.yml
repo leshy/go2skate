@@ -1,0 +1,17 @@
+# Install with uv from the lock, build everything, stand it in MuJoCo, and fail if anything differs from what's committed.
+name: build
+on: [push, pull_request]
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglu1-mesa  # OCP's runtime libraries
+      - run: uv sync --locked
+      - run: uv run go2skate build --stock
+      - run: uv run go2skate check
+      - name: the outputs match the committed ones
+        run: |
+          git status --short
+          test -z "$(git status --porcelain)"
