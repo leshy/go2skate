@@ -181,7 +181,7 @@ if __name__ == "__main__":
     for leg, q in feet.items():  # one each: they're labelled, and left and right differ with toe-out
         assert q.is_valid and len(q.solids()) == 1, leg
         export_stl(q, str(F.PRINT / f"wheel_foot_{leg}.stl"), tolerance=0.02, angular_tolerance=0.1)
-        export_step(q, str(F.MODELS / f"wheel_foot_{leg}.step"))
+        F.export_step_stable(q, F.MODELS / f"wheel_foot_{leg}.step")
     print("print one each:", ", ".join(f"wheel_foot_{leg}.stl" for leg in feet))
     from ocp_vscode import set_port, show
     set_port(3939)

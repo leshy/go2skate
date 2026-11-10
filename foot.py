@@ -19,6 +19,16 @@ from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRou
 
 HERE = Path(__file__).parent
 MODELS, PRINT = HERE / "models", HERE / "print"  # CAD exports; what to print
+
+
+def export_step_stable(shape, path):
+    """STEP with a fixed timestamp in its header: OCCT writes the time, which dirtied git on every rerun."""
+    import re
+    export_step(shape, str(path))
+    p = Path(path)
+    p.write_text(re.sub(r"(FILE_NAME\('[^']*',)'[^']*'", r"\1'2000-01-01T00:00:00'", p.read_text(), count=1))
+
+
 A_DEG = 31.5  # the foot's axis from the calf's z, towards +x
 TO_FOOT_OFFSET = (-109.478, 0.0, 150.840)  # after the rotation, to put the origin on the ears' top, mid-slot
 
@@ -106,7 +116,7 @@ if __name__ == "__main__":
     print(f"foot: valid {f.is_valid}, {len(f.solids())} solid, {f.volume / 1000:.1f} cm3, {f.bounding_box()}")
     MODELS.mkdir(exist_ok=True)
     PRINT.mkdir(exist_ok=True)
-    export_step(f, str(MODELS / "foot.step"))
+    export_step_stable(f, MODELS / "foot.step")
     export_stl(f, str(MODELS / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
     low = -(SLOT_DEEP + TEST_FLOOR)  # a fit test: the cup cut off TEST_FLOOR under the slot, standing on that face
     c = Pos(0, 0, -low) * (cup() & Pos(0, 0, low) * Box(200, 200, 100, align=(Align.CENTER, Align.CENTER, Align.MIN)))
