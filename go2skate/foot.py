@@ -1,4 +1,4 @@
-"""The Go2's detachable foot end, modelled from Unitree's mesh (vendor/, unitree_mujoco) and Ivan's measurements, to build a
+"""The Go2's detachable foot end, modelled from Unitree's mesh (data/, unitree_mujoco) and Ivan's measurements, to build a
 wheel foot from.
 
 Frame (the foot's own): X along the slot (u), Y across it, Z up the foot's axis; the origin on the top of the ears, mid-slot.
@@ -7,9 +7,8 @@ Unitree's calf frame (knee at the origin, foot down -z) maps into it by `TO_FOOT
 The real part: a grey cup (the ears either side of a slot the calf's tongue drops into, two M4 screws across through both ears
 and the tongue), a black rubber sole under it. Seam at SEAM.
 
-    uv run python foot.py      # shows it in the OCP viewer with the tongue and the fit test; models/: foot.step, foot.stl,
-                               # tongue.stl, foot_detachable_foot_frame.stl (the mesh, same frame);
-                               # print/cup_fit_test.stl
+    go2skate build --stock      # export(): models/foot.step, foot.stl, tongue.stl, foot_detachable_foot_frame.stl (the mesh,
+                                # same frame); print/cup_fit_test.stl; --show puts it in the OCP viewer
 """
 from pathlib import Path
 
@@ -17,9 +16,10 @@ import numpy as np
 from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRounded, RegularPolygon, Solid, Wire, export_step, export_stl,
                        extrude, fillet, loft, Sketch)
 
-HERE = Path(__file__).parent
-from config import SKATE as C  # noqa: E402
-MODELS, PRINT = HERE / "models", HERE / "print"  # CAD exports; what to print
+from . import config
+from .config import SKATE as C
+
+MODELS, PRINT = config.OUT / "models", config.OUT / "print"  # CAD exports; what to print
 
 
 def export_step_stable(shape, path):
@@ -108,17 +108,18 @@ def mesh_in_foot_frame():
     a = np.radians(A_DEG)
     R = np.eye(4)
     R[:3, :3] = [[np.cos(a), 0, -np.sin(a)], [0, 1, 0], [np.sin(a), 0, np.cos(a)]]
-    m = trimesh.load(HERE / "vendor/foot_detachable_mm.stl")
+    m = trimesh.load(config.DATA / "foot_detachable_mm.stl")
     m.apply_transform(R)
     m.apply_translation(TO_FOOT_OFFSET)
     return m
 
 
-if __name__ == "__main__":
+def export(show=False):
+    """The stock foot, its tongue and its mesh into models/, the fit-test cup into print/; shown in the OCP viewer with `show`."""
     f = foot()
     print(f"foot: valid {f.is_valid}, {len(f.solids())} solid, {f.volume / 1000:.1f} cm3, {f.bounding_box()}")
-    MODELS.mkdir(exist_ok=True)
-    PRINT.mkdir(exist_ok=True)
+    MODELS.mkdir(parents=True, exist_ok=True)
+    PRINT.mkdir(parents=True, exist_ok=True)
     export_step_stable(f, MODELS / "foot.step")
     export_stl(f, str(MODELS / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
     low = -(SLOT_DEEP + TEST_FLOOR)  # a fit test: the cup cut off TEST_FLOOR under the slot, standing on that face
@@ -131,7 +132,8 @@ if __name__ == "__main__":
     m = mesh_in_foot_frame()
     m.export(MODELS / "foot_detachable_foot_frame.stl")
     print("mesh in the foot frame:", m.bounds.round(1).tolist())
-    from ocp_vscode import set_port, show
-    set_port(3939)
-    f.color, t.color, c.color = "lightgray", "steelblue", "orange"
-    show(f, t, Pos(70, 0, 0) * c, names=["stock_foot", "calf_tongue", "cup_fit_test"])  # the fit test beside it, as it prints
+    if show:
+        from ocp_vscode import set_port, show as push
+        set_port(3939)
+        f.color, t.color, c.color = "lightgray", "steelblue", "orange"
+        push(f, t, Pos(70, 0, 0) * c, names=["stock_foot", "calf_tongue", "cup_fit_test"])  # the fit test beside it, as it prints

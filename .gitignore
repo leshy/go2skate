@@ -20,4 +20,4 @@ __pycache__/
 !models/*.step
 !models/*.stl
 !sim/generated/meshes/*.stl
-!vendor/*.stl
+!go2skate/data/*.stl

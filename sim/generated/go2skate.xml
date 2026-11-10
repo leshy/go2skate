@@ -37,22 +37,22 @@
     <material name="black" rgba="0 0 0 1" />
     <material name="white" rgba="1 1 1 1" />
     <material name="gray" rgba="0.671705 0.692426 0.774270 1" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/base_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/base_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/base_2.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/base_3.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/base_4.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/hip_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/hip_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/thigh_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/thigh_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/thigh_mirror_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/thigh_mirror_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/calf_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/calf_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/calf_mirror_0.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/calf_mirror_1.obj" />
-    <mesh file="../vendor/go2_menagerie/unitree_go2/assets/foot.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/base_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/base_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/base_2.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/base_3.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/base_4.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/hip_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/hip_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/thigh_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/thigh_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/thigh_mirror_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/thigh_mirror_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/calf_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/calf_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/calf_mirror_0.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/calf_mirror_1.obj" />
+    <mesh file="../../go2skate/data/go2_menagerie/unitree_go2/assets/foot.obj" />
     <mesh name="skate_left" file="meshes/skate_left.stl" />
     <mesh name="skate_right" file="meshes/skate_right.stl" />
     <mesh name="wheel_left" file="meshes/wheel_left.stl" />
@@ -100,7 +100,7 @@
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
                 <joint name="FL_wheel_joint" type="hinge" axis="-0.42632 0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_left" material="urethane" class="visual" />
-                <geom name="FL" type="mesh" mesh="wheel_left" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" />
+                <geom name="FL" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>
             </body>
           </body>
@@ -131,7 +131,7 @@
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
                 <joint name="FR_wheel_joint" type="hinge" axis="-0.42632 -0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_right" material="urethane" class="visual" />
-                <geom name="FR" type="mesh" mesh="wheel_right" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" />
+                <geom name="FR" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>
             </body>
           </body>
@@ -162,7 +162,7 @@
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
                 <joint name="RL_wheel_joint" type="hinge" axis="-0.42632 0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_left" material="urethane" class="visual" />
-                <geom name="RL" type="mesh" mesh="wheel_left" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" />
+                <geom name="RL" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>
             </body>
           </body>
@@ -193,7 +193,7 @@
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
                 <joint name="RR_wheel_joint" type="hinge" axis="-0.42632 -0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_right" material="urethane" class="visual" />
-                <geom name="RR" type="mesh" mesh="wheel_right" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" />
+                <geom name="RR" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>
             </body>
           </body>
@@ -216,6 +216,6 @@
     <motor class="knee" name="RR_calf" joint="RR_calf_joint" />
   </actuator>
   <keyframe>
-    <key name="home" qpos="0 0 0.27 1 0 0 0 0 0.9 -1.8 0 0 0.9 -1.8 0 0 0.9 -1.8 0 0 0.9 -1.8 0" ctrl="0 0.9 -1.8 0 0.9 -1.8 0 0.9 -1.8 0 0.9 -1.8" />
+    <key name="home" qpos="0 0 0.3338 1 0 0 0 0 0.9 -1.8 0 0 0.9 -1.8 0 0 0.9 -1.8 0 0 0.9 -1.8 0" ctrl="0 0.9 -1.8 0 0.9 -1.8 0 0.9 -1.8 0 0.9 -1.8" />
   </keyframe>
 </mujoco>

@@ -9,51 +9,63 @@ Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulatio
 
 ## Generate models
 
-### Configure
-
-edit `config.py` for wheel config (diameter, width, tread, mass), the bearings, the axle (diameter, length), and the physics the simulation uses. Edit a default and rerun the scripts below.
-
-### Generate models for printing
-
-to view parts you can optionally run `uv run python -m ocp_viewer --port 3939      # then browse to http://localhost:3939/viewer`
-
-`uv run python wheel_foot.py` generates the four feet, labelled FL, FR, RL, RR: stl in `print/` (print one each), step in `models/`.
-`uv run python foot.py` generates the stock foot (`models/`) and a fit-test cup to print first (`print/cup_fit_test.stl`).
-
-### Generate simulation for simulating
-
-`uv run python sim/gen_mjcf.py` generates simulation assets
+Everything is built from one config: `go2skate/config.py` (the wheel's size, tread and mass, the bearings, the axle, the toe-out
+angle, the fit, the fork's shape, and the physics the simulation uses).
 
 ```
-sim/generated/go2skate.xml
-sim/generated/scene.xml
-sim/generated/spec.json
-sim/generated/meshes/
+uv run go2skate build                  # print/ (STL), models/ (STEP), sim/generated/ (MuJoCo)
+uv run go2skate build --show           # and the FL foot in the CAD viewer
+uv run go2skate build --stock          # also the stock foot and a fit-test cup to print first (print/cup_fit_test.stl)
+uv run go2skate check                  # loads the model, sets the standing height so the wheels touch, stands for a second
+uv run go2skate view                   # MuJoCo's viewer, the robot standing on its wheels
 ```
 
-`uv run python sim/view.py` runs mujoco
+Change any setting for one build with `--set`, by its dotted name, and write somewhere else with `--out`:
+
+```
+uv run go2skate build --set toe_out_deg=20 --set wheel.diameter=72 --set fork.end_r=18 --out builds/72mm
+uv run go2skate check --out builds/72mm
+```
+
+The four feet come out labelled FL, FR, RL, RR (print one each): left and right are mirror images once the wheels toe out.
+For the CAD viewer, start it once with `uv run python -m ocp_viewer --port 3939` and browse to http://localhost:3939/viewer.
+
+The simulation, in `sim/generated/`:
+
+| | |
+|---|---|
+| `scene.xml` | the robot on its wheels, on a floor (`go2skate.xml` without the floor): Menagerie's Go2 with its feet swapped |
+| `spec.json` | the same geometry and physics as numbers: each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction |
+| `meshes/` | the visual meshes the MJCF loads |
+
+Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`): exact upright for the round tread and
+about 3× faster than its mesh (`--set sim.wheel_collision=mesh`), which stays exact as it leans.
 
 ## Using it from another project
 
-The generated simulation is plain files, so a training repo doesn't need this project's Python (or its CAD kernel) to use
-it. Add the repo as a git submodule pinned to a commit and load straight from `sim/generated/`:
+Add it as a dependency:
 
 ```
-git submodule add https://github.com/leshy/go2skate third_party/go2skate
+uv add git+https://github.com/leshy/go2skate
 ```
 
-- `third_party/go2skate/sim/generated/scene.xml`: the robot on its wheels, on a floor (`go2skate.xml` without the floor)
-- `third_party/go2skate/sim/generated/spec.json`: the same geometry and physics as numbers, to build your own model from:
-  each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction
-- `third_party/go2skate/sim/generated/meshes/`: the visual meshes the MJCF loads
+and build the skate you want into your own tree, from Python:
 
-Bump the submodule to pick up a new version. For other settings (toe angle, wheel size, ...), clone it, edit `config.py`, and
-run `uv run python wheel_foot.py` and `uv run python sim/gen_mjcf.py`: the masses and inertias come from the CAD solid, so
-regenerating needs the CAD dependencies, which `uv` installs.
+```python
+import go2skate
+from go2skate import Skate, Wheel
+
+out = go2skate.build(Skate(toe_out_deg=20, wheel=Wheel(diameter=72)), out="assets/go2skate", cad=False)
+# out / "sim/generated/scene.xml", out / "sim/generated/spec.json", ...
+```
+
+or from the command line: `go2skate build --set toe_out_deg=20 --out assets/go2skate --no-cad`. `cad=False` (`--no-cad`) skips
+the printable parts; the model is still built from the CAD solid, which gives its masses and inertias, so the CAD dependencies come
+along (`uv` installs them).
 
 ## BOM
 
-For one robot (four wheel feet), with the defaults in `config.py`:
+For one robot (four wheel feet), with the default config:
 
 | Part               | Spec                                                                             | Qty |
 |--------------------|----------------------------------------------------------------------------------|-----|
@@ -64,6 +76,6 @@ For one robot (four wheel feet), with the defaults in `config.py`:
 | Screw              | M4 x 25 socket cap: two per foot, across through both ears and the calf's tongue | 8   |
 | Heat-set insert    | M4, 4 mm long (5.5 mm hole), pressed into the far ear                            | 8   |
 
-Different wheel or axle? Measure it, set it in `config.py` and rerun. A wheel much bigger than 80 mm makes the legs effectively
+Different wheel or axle? Measure it, set it in the config (or `--set`) and rebuild. A wheel much bigger than 80 mm makes the legs effectively
 longer: the wheel's bottom is already 48.5 mm under the stock foot's.
 

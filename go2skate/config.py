@@ -1,12 +1,11 @@
 """Everything about the skate you might change: the wheel, its bearings and axle, the toe angle, how the fork fits round them,
-and the physics the simulation gives them. Change a default here, then rerun:
-
-    uv run python wheel_foot.py      # the part: print/, models/
-    uv run python sim/gen_mjcf.py    # the MuJoCo model and spec.json
+and the physics the simulation gives them. Change a default here and rerun `go2skate build`, or pass your own Skate(...) to
+go2skate.build(), or override fields on the command line: `go2skate build --set toe_out_deg=20 --set wheel.diameter=72`.
 
 Lengths in mm unless a name says otherwise.
 """
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -70,6 +69,8 @@ class Sim:
     bearing_damping_nms: float = 1e-4
     contact_friction: tuple = (0.9, 0.005, 0.0008)  # slide, torsion, rolling (m: rolling resistance ~0.02 times the radius)
     petg_density: float = 1.27  # g/cm³, solid: the print's infill makes it lighter
+    wheel_collision: str = "sphere"  # "sphere": radius = the wheel's, at its centre, exact upright for the round tread and fast;
+    # "mesh": the wheel's convex hull, exact as it leans too, but MuJoCo's mesh contacts slow the physics several times
 
 
 @dataclass(frozen=True)
@@ -90,3 +91,5 @@ class Skate:
 
 
 SKATE = Skate()
+DATA = Path(__file__).parent / "data"  # the meshes the build needs: Unitree's foot and calf, Menagerie's Go2
+OUT = Path.cwd()  # where builds write print/, models/ and sim/generated/: go2skate.build(out=...) sets it

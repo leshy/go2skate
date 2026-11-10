@@ -498,7 +498,7 @@ wheels = [
 [[package]]
 name = "go2skate"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "build123d" },
     { name = "cadquery-ocp" },

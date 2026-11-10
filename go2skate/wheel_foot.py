@@ -10,7 +10,7 @@ round: the most material the wheel leaves room for where they meet the cup.
 
 Every size and the toe angle come from config.py.
 
-    uv run python wheel_foot.py     # print/, models/; shows it with the wheel, its hardware and the calf's tongue in the OCP viewer
+    go2skate build               # export(): print/, models/; --show puts the FL foot in the OCP viewer with its wheel and hardware
 """
 from functools import cache
 
@@ -18,8 +18,8 @@ import numpy as np
 from build123d import (Align, Axis, Box, Cone, Cylinder, GeomType, Plane, Polygon, Pos, RectangleRounded, Rot, export_step, export_stl,
                       extrude, loft, Torus)
 
-import foot as F
-from config import SKATE as C
+from . import foot as F
+from .config import SKATE as C
 
 # As in a skate frame: the bearings are pressed into the wheel's hub (a spacer between), the wheel drops in between the arms and
 # the axle goes arm, bearing, spacer, bearing, arm; nothing holds the bearings but the wheel.
@@ -163,7 +163,8 @@ def hardware():
     return [turned(q) for q in parts]
 
 
-if __name__ == "__main__":
+def export(show=False):
+    """The four feet into print/ (STL) and models/ (STEP), after its checks; the FL foot in the OCP viewer with `show`."""
     p = wheel_foot()
     print(f"wheel foot: valid {p.is_valid}, {len(p.solids())} solid, {p.volume / 1000 * 1.27:.0f} g PETG; axle at w {AXLE_W:.1f}, "
           f"wheel's bottom at w {AXLE_W - WHEEL_D / 2:.1f} ({-(AXLE_W - WHEEL_D / 2) - 52.5:.1f} longer than the stock foot)")
@@ -173,8 +174,8 @@ if __name__ == "__main__":
           f"arm wall {OUTER - POCKET:.2f}")
     assert RACE_GAP > 0.5 and OUTER - POCKET >= 4.0
     print(f"wheel into the foot: {getattr(w & p, 'volume', 0.0):.2f} mm3; tongue into it: {getattr(F.tongue() & p, 'volume', 0.0):.2f} mm3")
-    F.PRINT.mkdir(exist_ok=True)
-    F.MODELS.mkdir(exist_ok=True)
+    F.PRINT.mkdir(parents=True, exist_ok=True)
+    F.MODELS.mkdir(parents=True, exist_ok=True)
     for old in [*F.PRINT.glob("wheel_foot*.stl"), *F.MODELS.glob("wheel_foot*.step")]:
         old.unlink()
     feet = legs()
@@ -183,11 +184,14 @@ if __name__ == "__main__":
         export_stl(q, str(F.PRINT / f"wheel_foot_{leg}.stl"), tolerance=0.02, angular_tolerance=0.1)
         F.export_step_stable(q, F.MODELS / f"wheel_foot_{leg}.step")
     print("print one each:", ", ".join(f"wheel_foot_{leg}.stl" for leg in feet))
-    from ocp_vscode import set_port, show
+    if not show:
+        return feet
+    from ocp_vscode import set_port, show as push
     set_port(3939)
     p = feet["FL"]  # shown: the front left, labelled
     w.color, p.color = "#34373c", "orange"
     t = F.tongue(); t.color = "#b0b4ba"
     hw = hardware()
-    show(p, w, t, *hw, names=["wheel_foot_FL", "wheel", "calf_tongue", "608_left", "608_right", "spacer", "axle"],
+    push(p, w, t, *hw, names=["wheel_foot_FL", "wheel", "calf_tongue", "608_left", "608_right", "spacer", "axle"],
          colors=["orange", "#34373c", "#b0b4ba", "#c4c9cf", "#c4c9cf", "#8b9097", "#6b7178"], alphas=[1, 0.85, 1, 1, 1, 1, 1])
+    return feet
