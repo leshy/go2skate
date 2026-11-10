@@ -25,7 +25,7 @@ from config import SKATE as C
 # the axle goes arm, bearing, spacer, bearing, arm; nothing holds the bearings but the wheel.
 WHEEL_D, WHEEL_W, TYRE_R = C.wheel.diameter, C.wheel.width, C.wheel.tread
 TOE = C.toe_out_deg  # the left foot's: +Z turns the rolling direction (X) towards +Y, out
-AXLE_D, AXLE_L, STACK_PLAY = C.axle.hole_d, C.axle.length, C.axle.play
+AXLE_D, AXLE_L, STACK_PLAY = C.axle.d + 2 * C.fit, C.axle.length, C.axle.play  # AXLE_D: the hole
 RACE_D, BEARING_D, BEARING_W = C.bearing.race_boss_d, C.bearing.outer_d, C.bearing.width
 SIDE_CLEAR, CLEAR, ARM_T, END_R, TOP_GAP, FLOOR = (C.fork.side_clear, C.fork.tyre_clear, C.fork.arm_t, C.fork.end_r, C.fork.top_gap,
                                                    C.fork.cup_floor)

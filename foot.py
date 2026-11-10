@@ -18,6 +18,7 @@ from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRou
                        extrude, fillet, loft, Sketch)
 
 HERE = Path(__file__).parent
+from config import SKATE as C  # noqa: E402
 MODELS, PRINT = HERE / "models", HERE / "print"  # CAD exports; what to print
 
 
@@ -44,8 +45,10 @@ FIT = 0.2  # clearance each side of the tongue, in the slot
 SLOT_HALF, SLOT_DEEP, SLOT_R = TONGUE_HALF + FIT, TONGUE_DEEP + 0.7, TONGUE_R + FIT  # the slot: open at both ends
 EAR_EDGE_R = 5.0  # the ears' top edges, rounded
 FRONT_SLOPE = ((13.0, 0.0), (22.5, -18.0))  # (u, w): the +u end of the ears falls away from the top along this line
-HOLE_R, HOLE_PITCH, HOLE_DOWN, HOLE_U = 2.2, 15.5, 5.5, 0.0  # M4 clearance; 15.5 apart along the slot, 5.5 under the top (test print 1), centred at u
-HEAD_R, HEAD_DEEP, HEAD_SIDE = 3.75, 4.0, 1  # the screws' heads sunk this wide, this deep from the ear's outside, on the +y ear
+HOLE_PITCH, HOLE_DOWN, HOLE_U = 15.5, 5.5, 0.0  # 15.5 apart along the slot, 5.5 under the top (test print 1), centred at u
+HOLE_R = C.screws.d / 2 + C.fit  # the M4s' holes
+HEAD_R = C.screws.head_d / 2 + C.fit
+HEAD_DEEP, HEAD_SIDE = 4.0, 1  # the screws' heads sunk this deep from the ear's outside, on the +y ear
 INSERT_R, INSERT_DEEP = 2.75, 4.0  # a 4 mm M4 heat-set insert pressed into the other ear from outside, flush: as much plastic behind it as behind the head
 # The cup's and the sole's outlines, bottom up: (w, length along u, width across, corner radius)
 CUP = [(SEAM, 45.0, 38.0, 12.0), (-20.7, 42.5, 35.4, 12.0), (-10.8, 37.5, 32.0, 10.0), (0.0, 37.0, 28.0, 9.0)]

@@ -94,7 +94,7 @@
             <geom size="0.012 0.06" pos="0.008 0 -0.06" quat="0.994493 0 -0.104807 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="FL_skate">
-              <inertial pos="-0.00336799 -5.01472e-05 -0.214837" mass="0.0533382" fullinertia="2.98066e-05 3.36635e-05 2.07798e-05 1.9175e-06 -8.50228e-06 -1.08623e-06" />
+              <inertial pos="-0.00334401 -3.74833e-05 -0.214798" mass="0.0534889" fullinertia="2.99162e-05 3.37931e-05 2.08398e-05 1.91051e-06 -8.5514e-06 -1.10424e-06" />
               <geom mesh="skate_left" material="petg" class="visual" />
               <body name="FL_wheel" pos="-0.0173408 0 -0.237825">
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
@@ -125,7 +125,7 @@
             <geom size="0.013 0.06" pos="0.01 0 -0.06" quat="0.995004 0 -0.0998334 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="FR_skate">
-              <inertial pos="-0.00336799 5.01472e-05 -0.214837" mass="0.0533382" fullinertia="2.98066e-05 3.36635e-05 2.07798e-05 -1.9175e-06 -8.50228e-06 1.08623e-06" />
+              <inertial pos="-0.00334401 3.74833e-05 -0.214798" mass="0.0534889" fullinertia="2.99162e-05 3.37931e-05 2.08398e-05 -1.91051e-06 -8.5514e-06 1.10424e-06" />
               <geom mesh="skate_right" material="petg" class="visual" />
               <body name="FR_wheel" pos="-0.0173408 0 -0.237825">
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
@@ -156,7 +156,7 @@
             <geom size="0.013 0.06" pos="0.01 0 -0.06" quat="0.995004 0 -0.0998334 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="RL_skate">
-              <inertial pos="-0.00336799 -5.01472e-05 -0.214837" mass="0.0533382" fullinertia="2.98066e-05 3.36635e-05 2.07798e-05 1.9175e-06 -8.50228e-06 -1.08623e-06" />
+              <inertial pos="-0.00334401 -3.74833e-05 -0.214798" mass="0.0534889" fullinertia="2.99162e-05 3.37931e-05 2.08398e-05 1.91051e-06 -8.5514e-06 -1.10424e-06" />
               <geom mesh="skate_left" material="petg" class="visual" />
               <body name="RL_wheel" pos="-0.0173408 0 -0.237825">
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
@@ -187,7 +187,7 @@
             <geom size="0.013 0.06" pos="0.01 0 -0.06" quat="0.995004 0 -0.0998334 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="RR_skate">
-              <inertial pos="-0.00336799 5.01472e-05 -0.214837" mass="0.0533382" fullinertia="2.98066e-05 3.36635e-05 2.07798e-05 -1.9175e-06 -8.50228e-06 1.08623e-06" />
+              <inertial pos="-0.00334401 3.74833e-05 -0.214798" mass="0.0534889" fullinertia="2.99162e-05 3.37931e-05 2.08398e-05 -1.91051e-06 -8.5514e-06 1.10424e-06" />
               <geom mesh="skate_right" material="petg" class="visual" />
               <body name="RR_wheel" pos="-0.0173408 0 -0.237825">
                 <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
