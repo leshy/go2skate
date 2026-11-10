@@ -22,7 +22,7 @@ def build(skate=None, out=None, cad=True, sim=True, stock=False, show=False):
     """Build everything from `skate` (default: config.SKATE) into `out` (default: the current directory).
 
     cad: the four wheel feet, print/wheel_foot_{FL,FR,RL,RR}.stl and models/*.step
-    sim: the MuJoCo model, sim/generated/
+    sim: the MuJoCo model, sim/generated/, its keyframe raised until the wheels touch (go2skate check)
     stock: also the stock foot and the fit-test cup (models/foot.*, print/cup_fit_test.stl)
     show: put the FL foot in the OCP viewer on port 3939
     Returns the path written to.
@@ -40,4 +40,6 @@ def build(skate=None, out=None, cad=True, sim=True, stock=False, show=False):
         wheel_foot.export(show=show)
     if sim:
         mjcf.build()
+        from .check import run
+        run()  # the standing height into the keyframe, so the model's ready to view
     return config.OUT

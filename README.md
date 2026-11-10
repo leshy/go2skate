@@ -20,8 +20,7 @@ Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulatio
 You can check the stock foot and a fit-test cup (print/cup_fit_test.stl)
 `uv run go2skate build --stock` 
 
-4. Set the standing height and stand it for a second, then view it in MuJoCo
-`uv run go2skate check`
+4. View in MuJoCo
 `uv run go2skate view`
 
 ## CLI
