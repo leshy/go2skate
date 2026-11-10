@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 405" font-family="system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+<style>.card{fill:#f6f8fa;stroke:#d0d7de}.body{fill:#e3e7eb;stroke:#8c959f;stroke-width:1.5}.wheel{fill:#34373c}.roll{stroke:#e36209;stroke-width:2.5;stroke-linecap:round}.lbl{fill:#24292f;font-size:13px;font-weight:600}.title{fill:#24292f;font-size:16px;font-weight:700}.code{fill:#57606a;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e36209"/></marker></defs>
+<g transform="translate(0,0)"><rect class="card" x="4" y="4" width="232" height="397" rx="10"/>
+<g transform="translate(120,186)">
+<rect class="body" x="-33" y="-110" width="66" height="220" rx="16"/>
+<path d="M0,-98 l-11,15 h22 z" fill="#8c959f"/>
+<line class="roll" x1="-62.0" y1="-148.0" x2="-62.0" y2="-168.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="-143" width="22" height="70" rx="10" transform="rotate(0 -62 -108)"/>
+<text class="lbl" x="-100" y="-103" text-anchor="middle">FL</text>
+<line class="roll" x1="62.0" y1="-148.0" x2="62.0" y2="-168.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="-143" width="22" height="70" rx="10" transform="rotate(0 62 -108)"/>
+<text class="lbl" x="100" y="-103" text-anchor="middle">FR</text>
+<line class="roll" x1="-62.0" y1="68.0" x2="-62.0" y2="48.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="73" width="22" height="70" rx="10" transform="rotate(0 -62 108)"/>
+<text class="lbl" x="-100" y="113" text-anchor="middle">RL</text>
+<line class="roll" x1="62.0" y1="68.0" x2="62.0" y2="48.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="73" width="22" height="70" rx="10" transform="rotate(0 62 108)"/>
+<text class="lbl" x="100" y="113" text-anchor="middle">RR</text>
+</g>
+<text class="title" x="120" y="361" text-anchor="middle">Straight</text>
+<text class="code" x="120" y="385" text-anchor="middle">toe_deg=(0, 0, 0, 0)</text></g>
+<g transform="translate(240,0)"><rect class="card" x="4" y="4" width="232" height="397" rx="10"/>
+<g transform="translate(120,186)">
+<rect class="body" x="-33" y="-110" width="66" height="220" rx="16"/>
+<path d="M0,-98 l-11,15 h22 z" fill="#8c959f"/>
+<line class="roll" x1="-82.0" y1="-142.6" x2="-92.0" y2="-160.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="-143" width="22" height="70" rx="10" transform="rotate(-30 -62 -108)"/>
+<text class="lbl" x="-100" y="-103" text-anchor="middle">FL</text>
+<line class="roll" x1="82.0" y1="-142.6" x2="92.0" y2="-160.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="-143" width="22" height="70" rx="10" transform="rotate(30 62 -108)"/>
+<text class="lbl" x="100" y="-103" text-anchor="middle">FR</text>
+<line class="roll" x1="-82.0" y1="73.4" x2="-92.0" y2="56.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="73" width="22" height="70" rx="10" transform="rotate(-30 -62 108)"/>
+<text class="lbl" x="-100" y="113" text-anchor="middle">RL</text>
+<line class="roll" x1="82.0" y1="73.4" x2="92.0" y2="56.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="73" width="22" height="70" rx="10" transform="rotate(30 62 108)"/>
+<text class="lbl" x="100" y="113" text-anchor="middle">RR</text>
+</g>
+<text class="title" x="120" y="361" text-anchor="middle">V (default)</text>
+<text class="code" x="120" y="385" text-anchor="middle">toe_deg=(30, -30, 30, -30)</text></g>
+<g transform="translate(480,0)"><rect class="card" x="4" y="4" width="232" height="397" rx="10"/>
+<g transform="translate(120,186)">
+<rect class="body" x="-33" y="-110" width="66" height="220" rx="16"/>
+<path d="M0,-98 l-11,15 h22 z" fill="#8c959f"/>
+<line class="roll" x1="-82.0" y1="-142.6" x2="-92.0" y2="-160.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="-143" width="22" height="70" rx="10" transform="rotate(-30 -62 -108)"/>
+<text class="lbl" x="-100" y="-103" text-anchor="middle">FL</text>
+<line class="roll" x1="82.0" y1="-142.6" x2="92.0" y2="-160.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="-143" width="22" height="70" rx="10" transform="rotate(30 62 -108)"/>
+<text class="lbl" x="100" y="-103" text-anchor="middle">FR</text>
+<line class="roll" x1="-42.0" y1="73.4" x2="-32.0" y2="56.0" marker-end="url(#a)"/>
+<rect class="wheel" x="-73" y="73" width="22" height="70" rx="10" transform="rotate(30 -62 108)"/>
+<text class="lbl" x="-100" y="113" text-anchor="middle">RL</text>
+<line class="roll" x1="42.0" y1="73.4" x2="32.0" y2="56.0" marker-end="url(#a)"/>
+<rect class="wheel" x="51" y="73" width="22" height="70" rx="10" transform="rotate(-30 62 108)"/>
+<text class="lbl" x="100" y="113" text-anchor="middle">RR</text>
+</g>
+<text class="title" x="120" y="361" text-anchor="middle">X</text>
+<text class="code" x="120" y="385" text-anchor="middle">toe_deg=(30, -30, -30, 30)</text></g>
+</svg>

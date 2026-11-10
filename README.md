@@ -36,13 +36,9 @@ The four feet come out labelled FL, FR, RL, RR (print one each), each turned its
 
 ## Wheel layouts
 
-`toe_deg` turns each wheel about its foot's axis, in the order FL, FR, RL, RR. Positive turns the wheel's front to the robot's left. Seen from above, front up:
+`toe_deg` in `go2skate/config.py` (or `--set toe_deg=30,-30,-30,30` for one build) turns each wheel about its foot's axis, in the order FL, FR, RL, RR. Positive turns the wheel's front to the robot's left. Seen from above, front up:
 
-```
-V (default)  toe_deg=30,-30,30,-30     X            toe_deg=30,-30,-30,30
-   FL \   / FR                            FL \   / FR
-   RL \   / RR                            RL /   \ RR
-```
+<img src="assets/layouts.svg" width="100%" alt="Seen from above, front up: Straight, every wheel along the body; V, every wheel toed out; X, each diagonal pair of wheels on one line through the body's middle">
 
 - **V**: every wheel toes out, like a skater's stance. Turns easily.
 - **X**: each diagonal pair (FL with RR, FR with RL) lies on one line through the body's middle. Every wheel rolls towards or away from the middle, so the robot resists turning on the spot.
