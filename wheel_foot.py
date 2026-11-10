@@ -186,8 +186,8 @@ if __name__ == "__main__":
     from ocp_vscode import set_port, show
     set_port(3939)
     p = feet["FL"]  # shown: the front left, labelled
-    w.color, p.color = "dimgray", "orange"
-    t = F.tongue(); t.color = "steelblue"
+    w.color, p.color = "#34373c", "orange"
+    t = F.tongue(); t.color = "#b0b4ba"
     hw = hardware()
     show(p, w, t, *hw, names=["wheel_foot_FL", "wheel", "calf_tongue", "608_left", "608_right", "spacer", "axle"],
-         colors=["orange", "dimgray", "steelblue", "#c4c9cf", "#c4c9cf", "#8b9097", "#6b7178"], alphas=[1, 0.35, 1, 1, 1, 1, 1])
+         colors=["orange", "#34373c", "#b0b4ba", "#c4c9cf", "#c4c9cf", "#8b9097", "#6b7178"], alphas=[1, 0.85, 1, 1, 1, 1, 1])
