@@ -2,3 +2,5 @@
 *.stl
 *.step
 !vendor/*.stl
+!sim/meshes/*.stl
+__pycache__/

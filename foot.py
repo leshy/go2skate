@@ -7,7 +7,8 @@ Unitree's calf frame (knee at the origin, foot down -z) maps into it by `TO_FOOT
 The real part: a grey cup (the ears either side of a slot the calf's tongue drops into, two M4 screws across through both ears
 and the tongue), a black rubber sole under it. Seam at SEAM.
 
-    .venv/bin/python foot.py      # writes foot.step, foot.stl and vendor/foot_detachable_foot_frame.stl (the mesh, same frame)
+    uv run python foot.py      # models/: foot.step, foot.stl, tongue.stl, foot_detachable_foot_frame.stl (the mesh, same frame);
+                               # print/cup_fit_test.stl
 """
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, Rot, RectangleRou
                        extrude, fillet, loft, Sketch)
 
 HERE = Path(__file__).parent
+MODELS, PRINT = HERE / "models", HERE / "print"  # CAD exports; what to print
 A_DEG = 31.5  # the foot's axis from the calf's z, towards +x
 TO_FOOT_OFFSET = (-109.478, 0.0, 150.840)  # after the rotation, to put the origin on the ears' top, mid-slot
 
@@ -101,15 +103,17 @@ def mesh_in_foot_frame():
 if __name__ == "__main__":
     f = foot()
     print(f"foot: valid {f.is_valid}, {len(f.solids())} solid, {f.volume / 1000:.1f} cm3, {f.bounding_box()}")
-    export_step(f, str(HERE / "foot.step"))
-    export_stl(f, str(HERE / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
+    MODELS.mkdir(exist_ok=True)
+    PRINT.mkdir(exist_ok=True)
+    export_step(f, str(MODELS / "foot.step"))
+    export_stl(f, str(MODELS / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
     low = -(SLOT_DEEP + TEST_FLOOR)  # a fit test: the cup cut off TEST_FLOOR under the slot, standing on that face
     c = Pos(0, 0, -low) * (cup() & Pos(0, 0, low) * Box(200, 200, 100, align=(Align.CENTER, Align.CENTER, Align.MIN)))
-    export_stl(c, str(HERE / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
+    export_stl(c, str(PRINT / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
     print(f"cup_fit_test.stl: {c.volume / 1000 * 1.27:.0f} g PETG")
     t = tongue()
-    export_stl(t, str(HERE / "tongue.stl"), tolerance=0.02, angular_tolerance=0.1)
+    export_stl(t, str(MODELS / "tongue.stl"), tolerance=0.02, angular_tolerance=0.1)
     print(f"tongue: valid {t.is_valid}, {t.bounding_box()}; in the cup {getattr(t & cup(), "volume", 0.0):.3f} mm3")
     m = mesh_in_foot_frame()
-    m.export(HERE / "vendor/foot_detachable_foot_frame.stl")
+    m.export(MODELS / "foot_detachable_foot_frame.stl")
     print("mesh in the foot frame:", m.bounds.round(1).tolist())
