@@ -69,6 +69,27 @@ def vec(v):
     return " ".join(f"{x:.6g}" for x in v)
 
 
+def rot_z(deg):
+    t = np.radians(deg)
+    return np.array([[np.cos(t), -np.sin(t), 0], [np.sin(t), np.cos(t), 0], [0, 0, 1]])
+
+
+def tread_hull(R):
+    """The wheel's collision shape: the convex hull of its tread's round (a tube of TYRE_R round a circle of radius R_wheel -
+    TYRE_R), hull_around x hull_across points over the round's outer half, metres, centred on the wheel; R turns the wheel's own
+    frame (rolling in X-Z, axle along Y) into the calf's."""
+    r_wheel, rr = W.WHEEL_D / 2000, W.TYRE_R / 1000
+    a = W.WHEEL_W / 2000 - rr  # where the round's centre sits across, either side (0: fully round)
+    pts = []
+    for th in np.linspace(0, 2 * np.pi, C.sim.hull_around, endpoint=False):
+        for ph in np.linspace(-np.pi / 2, np.pi / 2, C.sim.hull_across):  # outward over the tread, side to side
+            rad = r_wheel - rr + rr * np.cos(ph)
+            y = (a if ph >= 0 else -a) + rr * np.sin(ph)
+            pts.append((rad * np.cos(th), y, rad * np.sin(th)))
+    hull = trimesh.Trimesh(np.array(pts) @ R.T).convex_hull
+    return hull
+
+
 def build():
     out = OUT / "meshes"
     out.mkdir(parents=True, exist_ok=True)
@@ -89,6 +110,9 @@ def build():
     wheel = tessellated(W.wheel(), out / "wheel_left.stl").apply_transform(T).apply_scale(1e-3).apply_translation(-centre)
     flip = np.eye(4)
     flip[:3, :3] = MIRROR
+    tread = tread_hull(T[:3, :3] @ rot_z(W.TOE))
+    tread.export(out / "tread_left.stl")
+    tread.copy().apply_transform(np.diag([1.0, -1.0, 1.0, 1.0])).export(out / "tread_right.stl")
     for name, m in (("skate", skate), ("wheel", wheel)):
         m.export(out / f"{name}_left.stl")
         m.copy().apply_transform(flip).export(out / f"{name}_right.stl")  # trimesh keeps the faces outward
@@ -103,7 +127,7 @@ def build():
     asset = root.find("asset")
     for m in asset.findall("mesh"):  # Menagerie's own meshes, where they are vendored
         m.set("file", os.path.relpath(MENAGERIE / "assets" / m.get("file"), OUT))
-    for name in ("skate_left", "skate_right", "wheel_left", "wheel_right", "calf_upper", "calf_upper_mirror"):
+    for name in ("skate_left", "skate_right", "wheel_left", "wheel_right", "tread_left", "tread_right", "calf_upper", "calf_upper_mirror"):
         ET.SubElement(asset, "mesh", name=name, file=f"meshes/{name}.stl")
     ET.SubElement(asset, "material", name="petg", rgba="0.95 0.55 0.15 1")
     ET.SubElement(asset, "material", name="urethane", rgba="0.15 0.15 0.18 1")
@@ -125,8 +149,8 @@ def build():
         ET.SubElement(wb, "joint", name=f"{leg}_wheel_joint", type="hinge", axis=vec(s["axle"]), limited="false",
                       damping=f"{C.sim.bearing_damping_nms:g}", frictionloss=f"{C.sim.bearing_friction_nm:g}", armature="0")
         ET.SubElement(wb, "geom", mesh=f"wheel_{SIDE[leg]}", material="urethane", **{"class": "visual"})
-        shape = (dict(type="sphere", size=f"{W.WHEEL_D / 2000:g}") if C.sim.wheel_collision == "sphere" else
-                 dict(type="mesh", mesh=f"wheel_{SIDE[leg]}"))
+        shape = {"sphere": dict(type="sphere", size=f"{W.WHEEL_D / 2000:g}"), "hull": dict(type="mesh", mesh=f"tread_{SIDE[leg]}"),
+                 "mesh": dict(type="mesh", mesh=f"wheel_{SIDE[leg]}")}[C.sim.wheel_collision]
         ET.SubElement(wb, "geom", name=leg, group="3", condim="6", priority="1", friction=vec(C.sim.contact_friction),
                       solimp="0.9 0.95 0.001", **shape)
 

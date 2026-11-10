@@ -69,8 +69,11 @@ class Sim:
     bearing_damping_nms: float = 1e-4
     contact_friction: tuple = (0.9, 0.005, 0.0008)  # slide, torsion, rolling (m: rolling resistance ~0.02 times the radius)
     petg_density: float = 1.27  # g/cm³, solid: the print's infill makes it lighter
-    wheel_collision: str = "sphere"  # "sphere": radius = the wheel's, at its centre, exact upright for the round tread and fast;
-    # "mesh": the wheel's convex hull, exact as it leans too, but MuJoCo's mesh contacts slow the physics several times
+    wheel_collision: str = "sphere"  # "sphere": the wheel's radius at its centre, exact upright, up to ~4 mm off leaning 30°, the
+    # fastest; "hull": a convex hull of the tread's round (hull_around x hull_across points), within 0.3 mm at any lean, but
+    # its many near-floor points made contact ~3x slower here; "mesh": the CAD wheel's tessellation, exact, ~3x slower in impacts
+    hull_around: int = 36  # 0.15 mm chord sag round an 80 mm wheel
+    hull_across: int = 12  # 0.13 mm across the 12.25 tread round
 
 
 @dataclass(frozen=True)

@@ -57,6 +57,8 @@
     <mesh name="skate_right" file="meshes/skate_right.stl" />
     <mesh name="wheel_left" file="meshes/wheel_left.stl" />
     <mesh name="wheel_right" file="meshes/wheel_right.stl" />
+    <mesh name="tread_left" file="meshes/tread_left.stl" />
+    <mesh name="tread_right" file="meshes/tread_right.stl" />
     <mesh name="calf_upper" file="meshes/calf_upper.stl" />
     <mesh name="calf_upper_mirror" file="meshes/calf_upper_mirror.stl" />
     <material name="petg" rgba="0.95 0.55 0.15 1" />

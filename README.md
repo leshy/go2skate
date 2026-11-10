@@ -38,8 +38,9 @@ The simulation, in `sim/generated/`:
 | `spec.json` | the same geometry and physics as numbers: each leg's wheel centre and axle in the calf frame, wheel size and tread, masses, inertias, friction |
 | `meshes/` | the visual meshes the MJCF loads |
 
-Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`): exact upright for the round tread and
-about 3× faster than its mesh (`--set sim.wheel_collision=mesh`), which stays exact as it leans.
+Each wheel collides as a sphere of its radius at its centre (`sim.wheel_collision`): exact upright for the round tread, a few
+mm off as it leans hard, and the fastest. `--set sim.wheel_collision=hull` uses a convex hull of the tread (within 0.3 mm at any
+lean), `mesh` the CAD wheel itself; both cost more contact time. `spec.json` has the exact tread to build your own.
 
 ## Using it from another project
 
