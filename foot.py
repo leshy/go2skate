@@ -7,7 +7,8 @@ Unitree's calf frame (knee at the origin, foot down -z) maps into it by `TO_FOOT
 The real part: a grey cup (the ears either side of a slot the calf's tongue drops into, two M4 screws across through both ears
 and the tongue), a black rubber sole under it. Seam at SEAM.
 
-    uv run python foot.py      # models/: foot.step, foot.stl, tongue.stl, foot_detachable_foot_frame.stl (the mesh, same frame);
+    uv run python foot.py      # shows it in the OCP viewer with the tongue and the fit test; models/: foot.step, foot.stl,
+                               # tongue.stl, foot_detachable_foot_frame.stl (the mesh, same frame);
                                # print/cup_fit_test.stl
 """
 from pathlib import Path
@@ -117,3 +118,7 @@ if __name__ == "__main__":
     m = mesh_in_foot_frame()
     m.export(MODELS / "foot_detachable_foot_frame.stl")
     print("mesh in the foot frame:", m.bounds.round(1).tolist())
+    from ocp_vscode import set_port, show
+    set_port(3939)
+    f.color, t.color, c.color = "lightgray", "steelblue", "orange"
+    show(f, t, Pos(70, 0, 0) * c, names=["stock_foot", "calf_tongue", "cup_fit_test"])  # the fit test beside it, as it prints

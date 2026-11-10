@@ -27,7 +27,8 @@ class Bearing:
     """Two per wheel, pressed into its hub flush with its faces, a spacer between: a 608 unless the wheel takes something else."""
     outer_d: float = 22.0
     width: float = 7.0
-    race_boss_d: float = 10.5  # the boss on each arm that bears on the inner race only, inside the shield (~12 on a 608)
+    race_boss_d: float = 10.5  # the face of the boss on each arm that bears on the inner race only, inside the shield (~12 on a
+    # 608); the boss widens at 45° back to the arm, so it prints without overhang
 
 
 @dataclass(frozen=True)
@@ -37,15 +38,21 @@ class Axle:
     hole_d: float = 8.2  # its hole in the arms
     length: float = 38.0  # under its heads, measured: the arms are made this plus `play` wide outside to outside
     play: float = 0.3  # so it clamps the stack before its halves bottom out
+    head_d: float = 15.0  # its heads: each arm's outside is flat round the hole this wide, plus `seat_margin` all round
+    seat_margin: float = 1.0
 
 
 @dataclass(frozen=True)
 class Fork:
     """How the fork fits round the wheel."""
-    arm_t: float = 6.0  # each arm's thickness at the axle, its outside to its boss's face
-    end_r: float = 11.0  # the arms' round end about the axle
+    arm_t: float = 6.0  # each arm's thickness at the axle, outside to inside face; its boss stands on out to the bearing
+    end_r: float = 20.0  # the arms' round end about the axle (radius: 40 across)
+    end_chamfer: float = 1.5  # round the outside of that round end (the axle's head still seats on the flat inside it)
     tyre_clear: float = 2.0  # round the tread
-    side_clear: float = 2.0  # each arm's inside face, round its boss, off the wheel's side: room to flex
+    side_pocket: bool = False  # pocket each arm's inside face back round its boss, room to flex off the wheel's flat sides
+    side_clear: float = 2.0  # with the pocket: how far the arm's face stands off the wheel's side there
+    side_clear_r: float = 17.0  # with the pocket: how far from the axle it reaches (the wheel's hub), ramping out at 45° to the
+    # arm's face beyond, so it doesn't eat into the arms' roots at the cup
     top_gap: float = 4.0  # the tread's top under the cup
     cup_floor: float = 4.0  # the cup kept this far under its slot
 
@@ -66,8 +73,11 @@ class Skate:
     axle: Axle = field(default_factory=Axle)
     fork: Fork = field(default_factory=Fork)
     sim: Sim = field(default_factory=Sim)
-    toe_out_deg: float = 0.0  # each wheel turned about the foot's own axis (~14° off vertical standing), its front away from the
-    # body's centre line; non-zero makes left and right feet mirror images: two of each
+    toe_out_deg: float = 30.0  # each wheel turned about the foot's own axis (~14° off vertical standing), its front away from the
+    # body's centre line, like a skater's V; non-zero makes left and right feet mirror images
+    label: bool = True  # engrave each foot's leg (FL, FR, RL, RR) and an arrow to the robot's front on its fork's outer side
+    label_size: float = 6.0  # the text's height
+    label_depth: float = 0.6
 
 
 SKATE = Skate()
