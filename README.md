@@ -6,6 +6,9 @@ Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulatio
   <img src="assets/model.png" width="49%" alt="The front-left wheel foot in the CAD viewer, with its wheel, bearings and axle">
   <img src="assets/mujoco.png" width="49%" alt="The Go2 on its wheel feet in MuJoCo, standing in the home pose">
 </p>
+<p>
+  <img src="assets/go2.jpeg" width="99%" alt="The real Go2 lying down on parquet on four printed white wheel feet with red inline-skate wheels">
+</p>
 
 ## Generate models
 
@@ -81,10 +84,12 @@ For one robot (four wheel feet), with the default config:
 | Bearing            | **608** (8 x 22 x 7 mm), shielded: the standard skate bearing, two per wheel     | 8   |
 | Bearing spacer     | sits inside the wheel's hub between the two bearings                             | 4   |
 | Bearing insert     | 8 to 6 mm reducer, one in each bearing (for the M6 axle)                         | 8   |
-| Axle               | **M6 x 50 hex bolt** + M6 nyloc nut, clamping **38 mm** between the washers. For an 8 mm skate axle or M8 bolt, no inserts: `--set axle.d=8` | 4   |
-| Washer             | M6 (DIN 125, 12 mm), under the head and the nut                                  | 8   |
+| Axle               | **M6 x 50 hex bolt** + M6 nyloc nut: the arms are 38.3 outside to outside, it clamps up to 41.25 (`axle.bolt`, `axle.nut_washers`); wider arms sink the washers. For an 8 mm skate axle or M8 bolt, no inserts: `--set axle.d=8` | 4   |
+| Washer             | M6, 18 mm (DIN 9021, `axle.washer_d`), under the head and the nut                | 8   |
 | Screw              | M4 x 25 socket cap: two per foot, across through both ears and the calf's tongue | 8   |
 | Nut                | M4 hex nut (ISO 4032, 7 mm across flats, 3.2 thick), sunk in the far ear. Or `--set screws.nut=false` for M4 x 4 mm heat-set inserts | 8   |
+
+`--set split=true` prints each foot in two halves instead, cut along the wheel's middle plane: `wheel_foot_{leg}_outer.stl` and `_inner.stl`, each laid on its cut face with its arm flat over the bed (support under the arm), so the layers run along the arm. Same screws: the M4s and the axle clamp the halves.
 
 The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still.
 
