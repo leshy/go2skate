@@ -79,9 +79,10 @@ For one robot (four wheel feet), with the default config:
 | Printed wheel foot | `print/wheel_foot_{FL,FR,RL,RR}.stl`, one each (labelled), PETG                  | 4   |
 | Inline-skate wheel | **80 mm** diameter, about **24 mm** wide (designed for 24.5)                     | 4   |
 | Bearing            | **608** (8 x 22 x 7 mm), shielded: the standard skate bearing, two per wheel     | 8   |
-| Bearing spacer     | 8 mm bore, sits inside the wheel's hub between the two bearings                  | 4   |
-| Axle               | **M8 x 55 hex bolt**, partly threaded (ISO 4014, plain shank through both bearings) + M8 nyloc nut, clamping **38 mm** between the washers. Or an 8 mm two-piece skate axle, 38 mm under the heads | 4   |
-| Washer             | M8, 16 mm (DIN 125), under the head and the nut                                  | 8   |
+| Bearing spacer     | sits inside the wheel's hub between the two bearings                             | 4   |
+| Bearing insert     | 8 to 6 mm reducer, one in each bearing (for the M6 axle)                         | 8   |
+| Axle               | **M6 x 50 hex bolt** + M6 nyloc nut, clamping **38 mm** between the washers. For an 8 mm skate axle or M8 bolt, no inserts: `--set axle.d=8` | 4   |
+| Washer             | M6 (DIN 125, 12 mm), under the head and the nut                                  | 8   |
 | Screw              | M4 x 25 socket cap: two per foot, across through both ears and the calf's tongue | 8   |
 | Nut                | M4 hex nut (ISO 4032, 7 mm across flats, 3.2 thick), sunk in the far ear. Or `--set screws.nut=false` for M4 x 4 mm heat-set inserts | 8   |
 

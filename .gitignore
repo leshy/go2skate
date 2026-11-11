@@ -21,3 +21,4 @@ __pycache__/
 !models/*.stl
 !sim/generated/meshes/*.stl
 !go2skate/data/*.stl
+builds/

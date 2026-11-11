@@ -33,7 +33,7 @@ class Bearing:
 @dataclass(frozen=True)
 class Axle:
     """A two-piece inline-skate axle (or a bolt) through both arms."""
-    d: float = 8.0  # its hole in the arms is this plus Skate.fit each side
+    d: float = 6.0  # M6, through 8->6 mm inserts in the 608s (8: a standard skate axle); the arms' hole is this plus Skate.fit a side
     length: float = 38.0  # under its heads, measured: the arms are made this plus `play` wide outside to outside
     play: float = 0.3  # so tightening it clamps the arms onto the stack (a two-piece axle: before its halves bottom out)
     head_d: float = 15.0  # its heads: each arm's outside is flat round the hole this wide, plus `seat_margin` all round
@@ -88,14 +88,16 @@ class Skate:
     screws: Screws = field(default_factory=Screws)
     fork: Fork = field(default_factory=Fork)
     sim: Sim = field(default_factory=Sim)
-    fit: float = 0.025  # clearance a side for printed fits (the axle holes; the M4s have Screws.fit): tuned on the H2S with top_mount's
-    # fit_test.py. Not the heat-set inserts' holes (their maker's size) or the calf tongue's slot (foot.FIT, proven by a test print)
+    fit: float = 0.15  # clearance a side in the axle holes: 6.3 for the M6 (the arms print with the hole on its side, so it closes
+    # up). The M4s have Screws.fit, the calf tongue's slot foot.FIT
     toe_deg: tuple = (30.0, -30.0, 30.0, -30.0)  # FL, FR, RL, RR: each wheel turned about its foot's own axis (~14° off vertical
     # standing), + turns its front to the robot's left. V, every toe out like a skater's: (30, -30, 30, -30). X, each diagonal pair
     # on one line through the body's middle: (30, -30, -30, 30). All 0: straight
-    label: bool = True  # engrave each foot's leg (FL, FR, RL, RR) and an arrow to the robot's front on its fork's outer side
-    label_size: float = 6.0  # the text's height
-    label_depth: float = 0.6
+    label: bool = True  # engrave, under the axle: on the fork's outer arm the build's name over the leg (FL, FR, RL, RR) and an
+    # arrow to the robot's front; on the other arm that foot's toe ("30° out")
+    name: str = ""  # the build's name, engraved: "" names it from toe_deg (V30, X30, S0 straight, else T)
+    label_size: float = 5.0  # the text's size (its capitals ~0.73 of it): two lines fit the flat under the axle's seat
+    label_depth: float = 1.0
 
 
 SKATE = Skate()

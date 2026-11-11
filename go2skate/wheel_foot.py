@@ -126,28 +126,74 @@ def wheel_foot(a):
     return part - turned(Pos(0, 0, AXLE_W) * Rot(X=90) * Cylinder(AXLE_D / 2, 100), a)
 
 
-def label_cutter(leg):
-    """What engraves `leg` and an arrow to the robot's front (+X) into its fork's outer side: on the round end's flat, under the
-    axle's seat, reading upright from outside. Left legs' outer side is +Y, right legs' -Y (their foot is the mirror)."""
-    from build123d import Text
-    s = 1 if leg[1] == "L" else -1
-    v = AXLE_W - (C.axle.head_d / 2 + C.axle.seat_margin + C.fork.end_r - C.fork.end_chamfer) / 2  # mid-way down the flat
+def engraving(leg, outer, lines):
+    """Cut `lines` [(2D shapes in the text plane, v)] `label_depth` into the fork's arm: the leg's outer one (`outer`), else the
+    other; upright, read from outside; on the round end's flat under the axle's seat. Left legs' outer side is +Y, right legs' -Y
+    (their foot is the mirror)."""
+    s = (1 if leg[1] == "L" else -1) * (1 if outer else -1)
     d = C.label_depth
-    plane = Plane(origin=(0, s * (OUTER - d), v), x_dir=(-s, 0, 0), z_dir=(0, s, 0))  # upright, read from outside
+    turn = Pos(0, 0, AXLE_W) * Rot(Z=TOE[leg]) * Pos(0, 0, -AXLE_W)
+    return [turn * extrude(Plane(origin=(0, s * (OUTER - d), v), x_dir=(-s, 0, 0), z_dir=(0, s, 0)) * shape, d + 0.5)
+            for shape, v in lines]
+
+
+def text(t, size):
+    from build123d import Text
+    return Text(t, font_size=size, font_path=str(config.DATA / "DejaVuSans-Bold.ttf"))  # bundled: the same letters on any machine
+
+
+def label_cutter(leg):
+    """The leg's outer arm: the build's name, and under it the leg and an arrow to the robot's front (+X). The other arm: that
+    leg's toe. All under the axle's seat, in the round end's flat band (seat to chamfer)."""
+    s = 1 if leg[1] == "L" else -1
     h = C.label_size
-    fwd = -s  # +X (the robot's front), in the plane's own x
-    text = plane * Pos(-fwd * 0.45 * h, 0) * Text(leg, font_size=h, font_path=str(config.DATA / "DejaVuSans-Bold.ttf"))  # bundled: the same letters on any machine
-    arrow = plane * Pos(fwd * 0.75 * h, 0) * Polygon(*[(fwd * x, y) for x, y in
-                                                       [(-0.55 * h, 0.12 * h), (0.15 * h, 0.12 * h), (0.15 * h, 0.35 * h), (0.6 * h, 0.0),
-                                                        (0.15 * h, -0.35 * h), (0.15 * h, -0.12 * h), (-0.55 * h, -0.12 * h)]], align=None)
-    cut = Pos(0, 0, AXLE_W) * Rot(Z=TOE[leg]) * Pos(0, 0, -AXLE_W) * extrude(text + arrow, d + 0.5)
-    return cut
+    top = AXLE_W - C.axle.head_d / 2 - 0.6  # just under the axle's head
+    caps = 0.73 * h  # the font's capitals
+    name_v, leg_v = top - caps / 2, top - 1.5 * caps - 0.8
+    fwd = -s  # +X (the robot's front), in the text plane's own x
+    arrow = Pos(fwd * 0.75 * h, 0) * Polygon(*[(fwd * x, y) for x, y in
+                                              [(-0.55 * h, 0.12 * h), (0.15 * h, 0.12 * h), (0.15 * h, 0.35 * h), (0.6 * h, 0.0),
+                                               (0.15 * h, -0.35 * h), (0.15 * h, -0.12 * h), (-0.55 * h, -0.12 * h)]], align=None)
+    leg_line = Pos(-fwd * 0.45 * h, 0) * text(leg, h) + arrow
+    leg_line = Pos(-leg_line.bounding_box().center().X, 0) * leg_line  # centred under the axle, like the name over it
+    outer = engraving(leg, True, [(text(build_name(), h), name_v), (leg_line, leg_v)])
+    r = C.fork.end_r - C.fork.end_chamfer  # the round end's flat
+    for size in np.arange(2.5 * h, h / 2, -0.25):  # the toe: as large as fits the band from the head to the chamfer, 1 mm in
+        t = text(toe_text(leg), size)
+        c, w = 0.73 * size, t.bounding_box().size.X
+        v = top - c / 2 if c < top - (AXLE_W - r) - 1.0 else None
+        if v is not None and w / 2 + 1.0 <= np.sqrt(max(r ** 2 - (AXLE_W - (v - c / 2)) ** 2, 0)):
+            break
+    other = engraving(leg, False, [(t, v)])
+    return outer + other
+
+
+def build_name():
+    """config's name, or one from toe_deg: S0 straight, V30 every toe out 30, X30 each diagonal pair on a line, else T."""
+    fl, fr, rl, rr = C.toe_deg
+    if C.name:
+        return C.name
+    if not any(C.toe_deg):
+        return "S0"
+    if fl == rl == -fr == -rr:
+        return f"V{abs(fl):g}" if fl > 0 else f"A{abs(fl):g}"  # toes out; toes in
+    if fl == rr == -fr == -rl:
+        return f"X{abs(fl):g}"
+    return "T"
+
+
+def toe_text(leg):
+    """The leg's toe as its wheel sees it: 30° out (its front turned away from the body's middle), 30° in, or 0°."""
+    t, s = TOE[leg], 1 if leg[1] == "L" else -1
+    return "0°" if t == 0 else f"{abs(t):g}° {'out' if t * s > 0 else 'in'}"
 
 
 def legs():
-    """{leg: part}: each turned its own way (a right leg's the mirror of a left foot), engraved with its leg and the front's arrow."""
+    """{leg: part}: each turned its own way (a right leg's the mirror of a left foot), engraved (label_cutter)."""
     feet = {leg: wheel_foot(built(leg)) if leg[1] == "L" else wheel_foot(built(leg)).mirror(Plane.XZ) for leg in LEGS}
-    return {leg: q - label_cutter(leg) if C.label else q for leg, q in feet.items()}
+    if not C.label:
+        return feet
+    return {leg: q - label_cutter(leg) for leg, q in feet.items()}
 
 
 def wheel(a):
