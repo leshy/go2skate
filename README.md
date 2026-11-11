@@ -95,5 +95,7 @@ Print the feet split in two (`go2skate build --set split=true`) unless you print
 
 `split=true` cuts each foot along the wheel's middle plane: `print/wheel_foot_{leg}_outer.stl` and `_inner.stl`. Each half lies on its cut face with its arm flat over the bed, so the layers run along the arm. Put support under the arm (it stands ~13 mm off the bed), with an interface layer to keep the bearing's boss clean. The screws are the same: the M4s and the axle cross the cut and clamp the halves together.
 
+<img src="assets/print.png" width="49%" alt="Two halves of a wheel foot sliced, each on its cut face, the arm's flat outside up and tree supports (green) under the arm">
+
 The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still.
 
