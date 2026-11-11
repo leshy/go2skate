@@ -34,9 +34,10 @@ class Bearing:
 class Axle:
     """A two-piece inline-skate axle (or a bolt) through both arms."""
     d: float = 6.0  # M6, through 8->6 mm inserts in the 608s (8: a standard skate axle); the arms' hole is this plus Skate.fit a side
-    length: float = 38.0  # under its heads, measured: the arms are made this plus `play` wide outside to outside
-    play: float = 0.3  # so tightening it clamps the arms onto the stack (a two-piece axle: before its halves bottom out)
-    head_d: float = 15.0  # its heads: each arm's outside is flat round the hole this wide, plus `seat_margin` all round
+    bolt: float = 50.0  # M6 x 50: its length under the head
+    nut_washers: float = 8.75  # what the two washers and the nut take of it: it clamps at most bolt - nut_washers (41.25) of arm
+    washer_d: float = 18.0  # each arm's outside is flat round the hole this wide, plus `seat_margin` all round; arms wider outside
+    # to outside than the bolt clamps sink the washers into them, a pocket this wide
     seat_margin: float = 1.0
 
 
@@ -55,6 +56,7 @@ class Screws:
 class Fork:
     """How the fork fits round the wheel."""
     arm_t: float = 6.0  # each arm's thickness at the axle, outside to inside face; its boss stands on out to the bearing
+    race_gap: float = 0.9  # each arm's inside face off the wheel's side: its boss stands out this far onto the bearing's inner race
     end_r: float = 20.0  # the arms' round end about the axle (radius: 40 across)
     end_chamfer: float = 1.5  # round the outside of that round end (the axle's head still seats on the flat inside it)
     tyre_clear: float = 2.0  # round the tread
@@ -98,6 +100,8 @@ class Skate:
     name: str = ""  # the build's name, engraved: "" names it from toe_deg (V30, X30, S0 straight, else T)
     label_size: float = 5.0  # the text's size (its capitals ~0.73 of it): two lines fit the flat under the axle's seat
     label_depth: float = 1.0
+    split: bool = False  # print each foot in two halves, cut along the wheel's middle plane (no arm crosses it): each lies on its cut
+    # face, its arm flat over the bed (support under the arm), layers along the arm. The M4s and the axle clamp the halves together
 
 
 SKATE = Skate()

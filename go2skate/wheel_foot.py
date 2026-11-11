@@ -16,8 +16,8 @@ Every size and the toe angle come from config.py.
 from functools import cache
 
 import numpy as np
-from build123d import (Align, Axis, Box, Cone, Cylinder, GeomType, Plane, Polygon, Pos, RectangleRounded, Rot, export_step, export_stl,
-                      extrude, loft, Torus)
+from build123d import (Align, Axis, Box, Cone, Cylinder, GeomType, Plane, Polygon, Pos, RectangleRounded, Rot,
+                      export_step, export_stl, extrude, loft, Torus)
 
 from . import config
 from . import foot as F
@@ -26,7 +26,7 @@ from .config import SKATE as C
 # As in a skate frame: the bearings are pressed into the wheel's hub (a spacer between), the wheel drops in between the arms and
 # the axle goes arm, bearing, spacer, bearing, arm; nothing holds the bearings but the wheel.
 WHEEL_D, WHEEL_W, TYRE_R = C.wheel.diameter, C.wheel.width, C.wheel.tread
-AXLE_D, AXLE_L, STACK_PLAY = C.axle.d + 2 * C.fit, C.axle.length, C.axle.play  # AXLE_D: the hole
+AXLE_D, GRIP = C.axle.d + 2 * C.fit, C.axle.bolt - C.axle.nut_washers  # AXLE_D: the hole; GRIP: the most the bolt clamps
 RACE_D, BEARING_D, BEARING_W = C.bearing.race_boss_d, C.bearing.outer_d, C.bearing.width
 SIDE_CLEAR, CLEAR, ARM_T, END_R, TOP_GAP, FLOOR = (C.fork.side_clear, C.fork.tyre_clear, C.fork.arm_t, C.fork.end_r, C.fork.top_gap,
                                                    C.fork.cup_floor)
@@ -35,9 +35,11 @@ UP = (Align.CENTER, Align.CENTER, Align.MIN)
 
 TOP = -(F.SLOT_DEEP + FLOOR)  # where the cup stops and the loft starts
 AXLE_W = TOP - TOP_GAP - WHEEL_D / 2  # the axle's height in the foot frame
-OUTER = (AXLE_L + STACK_PLAY) / 2  # the arms' outer faces off the wheel's middle: the stack the axle clamps
-INNER = OUTER - ARM_T  # the arms' inside faces
-RACE_GAP = INNER - WHEEL_W / 2  # the wheel's side off them; each arm's boss stands out that far, onto the bearing's inner race
+RACE_GAP = C.fork.race_gap  # the wheel's side off the arms; each arm's boss stands out that far, onto the bearing's inner race
+INNER = WHEEL_W / 2 + RACE_GAP  # the arms' inside faces off the wheel's middle
+OUTER = INNER + ARM_T  # their outer faces
+SEAT = min(OUTER, GRIP / 2)  # the washers' faces: sunk into the arms when they're wider than the bolt clamps
+WASHER_R = C.axle.washer_d / 2 + 0.5
 POCKET = max(INNER, WHEEL_W / 2 + SIDE_CLEAR) if C.fork.side_pocket else INNER  # the arms' inside faces round the bosses
 
 
@@ -114,16 +116,28 @@ def wheel_foot(a):
     """A left foot, its wheel turned `a`."""
     part = cup_top()[0] + body(a)
     part -= sweep(CLEAR, a)
-    face = WHEEL_W / 2  # the bearings are flush with the wheel's sides: the bosses reach them, so the axle clamps the stack
-    h, r = POCKET - face, RACE_D / 2  # each boss: a 45° cone from the arm's face down to its face on the bearing
-    bosses = [Plane(origin=(0, s * (POCKET + 0.5), AXLE_W), z_dir=(0, -s, 0)) *
-              (Cylinder(r + h, 0.5, align=UP) + Pos(0, 0, 0.5) * Cone(r + h, r, h, align=UP)) for s in (1, -1)]
-    part += turned(bosses[0], a) + turned(bosses[1], a)
-    seat_r, seat_t = C.axle.head_d / 2 + C.axle.seat_margin, 3.0  # a flat seat for the axle's head on each arm's outside,
+    part += boss(1, a) + boss(-1, a)
+    seat_r, seat_t = C.axle.washer_d / 2 + C.axle.seat_margin, 3.0  # a flat seat for the axle's washer on each arm's outside,
     # exactly at OUTER: filled where the arm's side dips in, spot-faced where it bulges out
     part += [turned(Pos(0, s * (OUTER - seat_t / 2), AXLE_W) * Rot(X=90) * Cylinder(seat_r, seat_t), a) for s in (1, -1)]
     part -= [turned(Pos(0, s * (OUTER + seat_t / 2), AXLE_W) * Rot(X=90) * Cylinder(seat_r, seat_t), a) for s in (1, -1)]
-    return part - turned(Pos(0, 0, AXLE_W) * Rot(X=90) * Cylinder(AXLE_D / 2, 100), a)
+    return part - axle_cut(a)
+
+
+def boss(s, a):
+    """The arm on side `s`'s boss: a 45° cone from its face down to its face on the bearing. The bearings are flush with the
+    wheel's sides, so the bosses reach them and the axle clamps the stack."""
+    h, r = POCKET - WHEEL_W / 2, RACE_D / 2
+    return turned(Plane(origin=(0, s * (POCKET + 0.5), AXLE_W), z_dir=(0, -s, 0)) *
+                  (Cylinder(r + h, 0.5, align=UP) + Pos(0, 0, 0.5) * Cone(r + h, r, h, align=UP)), a)
+
+
+def axle_cut(a):
+    """The axle's hole, and the washers' pockets down to SEAT when the arms are wider than the bolt clamps."""
+    cut = [turned(Pos(0, 0, AXLE_W) * Rot(X=90) * Cylinder(AXLE_D / 2, 100), a)]
+    if SEAT < OUTER:
+        cut += [turned(Pos(0, s * (SEAT + 10), AXLE_W) * Rot(X=90) * Cylinder(WASHER_R, 20), a) for s in (1, -1)]
+    return cut
 
 
 def engraving(leg, outer, lines):
@@ -133,7 +147,7 @@ def engraving(leg, outer, lines):
     s = (1 if leg[1] == "L" else -1) * (1 if outer else -1)
     d = C.label_depth
     turn = Pos(0, 0, AXLE_W) * Rot(Z=TOE[leg]) * Pos(0, 0, -AXLE_W)
-    return [turn * extrude(Plane(origin=(0, s * (OUTER - d), v), x_dir=(-s, 0, 0), z_dir=(0, s, 0)) * shape, d + 0.5)
+    return [turn * extrude(Plane(origin=(0, s * (OUTER - d), v), x_dir=(-s, 0, 0), z_dir=(0, s, 0)) * shape, d + 0.5, dir=(0, s, 0))
             for shape, v in lines]
 
 
@@ -147,7 +161,7 @@ def label_cutter(leg):
     leg's toe. All under the axle's seat, in the round end's flat band (seat to chamfer)."""
     s = 1 if leg[1] == "L" else -1
     h = C.label_size
-    top = AXLE_W - C.axle.head_d / 2 - 0.6  # just under the axle's head
+    top = AXLE_W - C.axle.washer_d / 2 - 0.6  # just under the axle's washer
     caps = 0.73 * h  # the font's capitals
     name_v, leg_v = top - caps / 2, top - 1.5 * caps - 0.8
     fwd = -s  # +X (the robot's front), in the text plane's own x
@@ -196,6 +210,25 @@ def legs():
     return {leg: q - label_cutter(leg) for leg, q in feet.items()}
 
 
+def halves(leg):
+    """{outer, inner}: `leg`'s foot cut in two along the wheel's middle plane (it crosses no arm, only the cup and the waist; the
+    M4s and the axle cross it and clamp the halves), each laid on its cut face, its arm flat over the bed."""
+    a = built(leg)
+    q = wheel_foot(a)
+    ps = {k: q & turned(Pos(0, s * 100, 0) * Box(400, 200, 400), a) for k, s in (("outer", 1), ("inner", -1))}
+    side = 1
+    if leg[1] == "R":
+        ps, side = {k: p.mirror(Plane.XZ) for k, p in ps.items()}, -1
+    if C.label:
+        cut = label_cutter(leg)
+        ps = {k: p - cut for k, p in ps.items()}
+    for k, n in (("outer", side), ("inner", -side)):  # n: the half's side along the turned y; its cut face looks the other way
+        p = Rot(X=90 * n) * Rot(Z=-TOE[leg]) * ps[k]
+        b, low = p.bounding_box(), min(v.Z for v in p.vertices())  # the cut face's own corners: the box is loose round the text
+        ps[k] = Pos(-b.center().X, -b.center().Y, -low) * p
+    return ps
+
+
 def wheel(a):
     """For looks and checks: the tyre, round across, turned `a`."""
     return sweep(0.0, a, hub=False)
@@ -216,7 +249,7 @@ def export(show=False):
     p = wheel_foot(built("FL"))
     print(f"wheel foot: valid {p.is_valid}, {len(p.solids())} solid, {p.volume / 1000 * 1.27:.0f} g PETG; axle at w {AXLE_W:.1f}, "
           f"wheel's bottom at w {AXLE_W - WHEEL_D / 2:.1f} ({-(AXLE_W - WHEEL_D / 2) - 52.5:.1f} longer than the stock foot)")
-    print(f"arms outside to outside {2 * OUTER:.2f} mm (axle {AXLE_L:.1f}); bosses on the bearings, standing {RACE_GAP:.2f} out of the arms; "
+    print(f"arms outside to outside {2 * OUTER:.2f} mm (the bolt clamps up to {GRIP:.2f}{f', washers sunk {OUTER - SEAT:.2f}' if SEAT < OUTER else ''}); bosses on the bearings, standing {RACE_GAP:.2f} out of the arms; "
           f"wheel {POCKET - WHEEL_W / 2:.2f} off the arms round them{' (pocketed)' if POCKET > INNER else ''}, {RACE_GAP:.2f} beyond; "
           f"arm wall {OUTER - POCKET:.2f}")
     assert RACE_GAP > 0.5 and OUTER - POCKET >= 4.0
@@ -224,6 +257,8 @@ def export(show=False):
         q = wheel_foot(a)
         print(f"turned {a:+g}°: wheel into the foot {getattr(wheel(a) & q, 'volume', 0.0):.2f} mm3, tongue into it "
               f"{getattr(F.tongue() & q, 'volume', 0.0):.2f} mm3")
+    if C.split:
+        return export_split(show)
     F.PRINT.mkdir(parents=True, exist_ok=True)
     F.MODELS.mkdir(parents=True, exist_ok=True)
     for old in [*F.PRINT.glob("wheel_foot*.stl"), *F.MODELS.glob("wheel_foot*.step")]:
@@ -244,4 +279,26 @@ def export(show=False):
     hw = hardware(built("FL"))
     push(p, w, t, *hw, names=["wheel_foot_FL", "wheel", "calf_tongue", "608_left", "608_right", "spacer", "axle"],
          colors=["orange", "#34373c", "#b0b4ba", "#c4c9cf", "#c4c9cf", "#8b9097", "#6b7178"], alphas=[1, 0.85, 1, 1, 1, 1, 1])
+    return feet
+
+
+def export_split(show=False):
+    """The feet in halves into print/: wheel_foot_{leg}_{outer,inner}.stl, laid as they print; with `show`, the FL foot's halves
+    pulled 10 apart round its wheel in the OCP viewer."""
+    F.PRINT.mkdir(parents=True, exist_ok=True)
+    for old in F.PRINT.glob("wheel_foot*.stl"):
+        old.unlink()
+    feet = {leg: halves(leg) for leg in LEGS}
+    for leg, ps in feet.items():
+        for k, q in ps.items():
+            assert q.is_valid and len(q.solids()) == 1, (leg, k, len(q.solids()))
+            export_stl(q, str(F.PRINT / f"wheel_foot_{leg}_{k}.stl"), tolerance=0.02, angular_tolerance=0.1)
+        print(f"{leg}: " + ", ".join(f"{k} {q.volume / 1000 * 1.27:.0f} g" for k, q in ps.items()))
+    if show:
+        from ocp_vscode import set_port, show as push
+        set_port(3939)
+        a = built("FL")
+        q = wheel_foot(a) - label_cutter("FL")
+        hs = [turned(Pos(0, s * 10, 0), a) * (q & turned(Pos(0, s * 100, 0) * Box(400, 200, 400), a)) for s in (1, -1)]
+        push(*hs, wheel(a), names=["outer_half", "inner_half", "wheel"], colors=["orange", "#4a90d9", "#34373c"], alphas=[1, 1, 0.85])
     return feet

@@ -6,7 +6,7 @@
     go2skate check                                    # touch down, set the standing height, stand for a second
     go2skate view                                     # MuJoCo's viewer, the robot standing on its wheels
 
---set takes any field of config.Skate by its dotted name (wheel.width, axle.length, fork.end_r, toe_deg, fit, ...).
+--set takes any field of config.Skate by its dotted name (wheel.width, axle.bolt, fork.arm_t, toe_deg, fit, ...).
 """
 import argparse
 import dataclasses
