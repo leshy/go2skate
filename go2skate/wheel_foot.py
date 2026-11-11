@@ -284,7 +284,7 @@ def export(show=False):
 
 def export_split(show=False):
     """The feet in halves into print/: wheel_foot_{leg}_{outer,inner}.stl, laid as they print; with `show`, the FL foot's halves
-    pulled 10 apart round its wheel in the OCP viewer."""
+    together round its wheel in the OCP viewer, one colour each."""
     F.PRINT.mkdir(parents=True, exist_ok=True)
     for old in F.PRINT.glob("wheel_foot*.stl"):
         old.unlink()
@@ -299,6 +299,6 @@ def export_split(show=False):
         set_port(3939)
         a = built("FL")
         q = wheel_foot(a) - label_cutter("FL")
-        hs = [turned(Pos(0, s * 10, 0), a) * (q & turned(Pos(0, s * 100, 0) * Box(400, 200, 400), a)) for s in (1, -1)]
+        hs = [q & turned(Pos(0, s * 100, 0) * Box(400, 200, 400), a) for s in (1, -1)]
         push(*hs, wheel(a), names=["outer_half", "inner_half", "wheel"], colors=["orange", "#4a90d9", "#34373c"], alphas=[1, 1, 0.85])
     return feet
