@@ -42,4 +42,7 @@ def build(skate=None, out=None, cad=True, sim=True, stock=False, show=False):
         mjcf.build()
         from .check import run
         run()  # the standing height into the keyframe, so the model's ready to view
+    for d in ("print", "models", "sim/generated"):
+        for p in (config.OUT / d).rglob("*.stl"):
+            foot.round_stl_normals(p)
     return config.OUT
