@@ -89,7 +89,11 @@ For one robot (four wheel feet), with the default config:
 | Screw              | M4 x 25 socket cap: two per foot, across through both ears and the calf's tongue | 8   |
 | Nut                | M4 hex nut (ISO 4032, 7 mm across flats, 3.2 thick), sunk in the far ear. Or `--set screws.nut=false` for M4 x 4 mm heat-set inserts | 8   |
 
-`--set split=true` prints each foot in two halves instead, cut along the wheel's middle plane: `wheel_foot_{leg}_outer.stl` and `_inner.stl`, each laid on its cut face with its arm flat over the bed (support under the arm), so the layers run along the arm. Same screws: the M4s and the axle clamp the halves.
+## Printing
+
+Print the feet split in two (`go2skate build --set split=true`) unless you print them in PPA-CF, PA-CF or something as tough between layers. Standing up in one piece, the layers run across the arms, and in PETG a foot broke cleanly along a layer at the arms' root.
+
+`split=true` cuts each foot along the wheel's middle plane: `print/wheel_foot_{leg}_outer.stl` and `_inner.stl`. Each half lies on its cut face with its arm flat over the bed, so the layers run along the arm. Put support under the arm (it stands ~13 mm off the bed), with an interface layer to keep the bearing's boss clean. The screws are the same: the M4s and the axle cross the cut and clamp the halves together.
 
 The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still.
 
