@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 import trimesh
-from build123d import CenterOf, export_stl
+from build123d import CenterOf
 
 from . import config
 from . import foot as F
@@ -46,7 +46,7 @@ def calf_from_foot():
 
 
 def tessellated(shape, path):
-    export_stl(shape, str(path), tolerance=0.05, angular_tolerance=0.2)
+    F.export_stl_stable(shape, path, tolerance=0.05, angular_tolerance=0.2)
     return trimesh.load(path)
 
 

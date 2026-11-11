@@ -30,6 +30,16 @@ def export_step_stable(shape, path):
     p.write_text(re.sub(r"(FILE_NAME\('[^']*',)'[^']*'", r"\1'2000-01-01T00:00:00'", p.read_text(), count=1))
 
 
+def export_stl_stable(shape, path, **kw):
+    """Binary STL with its facet normals rounded: their last digits differ from CPU to CPU (1e-13), which failed CI's diff."""
+    export_stl(shape, str(path), **kw)
+    rows = np.fromfile(path, dtype=np.dtype([("n", "<f4", 3), ("v", "<f4", 9), ("attr", "<u2")]), offset=84)
+    rows["n"] = np.round(rows["n"], 6) + 0.0  # + 0.0: no -0.0
+    with open(path, "r+b") as f:
+        f.seek(84)
+        rows.tofile(f)
+
+
 A_DEG = 31.5  # the foot's axis from the calf's z, towards +x
 TO_FOOT_OFFSET = (-109.478, 0.0, 150.840)  # after the rotation, to put the origin on the ears' top, mid-slot
 
@@ -127,13 +137,13 @@ def export(show=False):
     MODELS.mkdir(parents=True, exist_ok=True)
     PRINT.mkdir(parents=True, exist_ok=True)
     export_step_stable(f, MODELS / "foot.step")
-    export_stl(f, str(MODELS / "foot.stl"), tolerance=0.02, angular_tolerance=0.1)
+    export_stl_stable(f, MODELS / "foot.stl", tolerance=0.02, angular_tolerance=0.1)
     low = -(SLOT_DEEP + TEST_FLOOR)  # a fit test: the cup cut off TEST_FLOOR under the slot, standing on that face
     c = Pos(0, 0, -low) * (cup() & Pos(0, 0, low) * Box(200, 200, 100, align=(Align.CENTER, Align.CENTER, Align.MIN)))
-    export_stl(c, str(PRINT / "cup_fit_test.stl"), tolerance=0.02, angular_tolerance=0.1)
+    export_stl_stable(c, PRINT / "cup_fit_test.stl", tolerance=0.02, angular_tolerance=0.1)
     print(f"cup_fit_test.stl: {c.volume / 1000 * 1.27:.0f} g PETG")
     t = tongue()
-    export_stl(t, str(MODELS / "tongue.stl"), tolerance=0.02, angular_tolerance=0.1)
+    export_stl_stable(t, MODELS / "tongue.stl", tolerance=0.02, angular_tolerance=0.1)
     print(f"tongue: valid {t.is_valid}, {t.bounding_box()}; in the cup {getattr(t & cup(), "volume", 0.0):.3f} mm3")
     m = mesh_in_foot_frame()
     m.export(MODELS / "foot_detachable_foot_frame.stl")

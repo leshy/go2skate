@@ -17,7 +17,7 @@ from functools import cache
 
 import numpy as np
 from build123d import (Align, Axis, Box, Cone, Cylinder, GeomType, Plane, Polygon, Pos, RectangleRounded, Rot,
-                      export_step, export_stl, extrude, loft, Torus)
+                      export_step, extrude, loft, Torus)
 
 from . import config
 from . import foot as F
@@ -266,7 +266,7 @@ def export(show=False):
     feet = legs()
     for leg, q in feet.items():  # one each: they're labelled, and differ as they're turned
         assert q.is_valid and len(q.solids()) == 1, leg
-        export_stl(q, str(F.PRINT / f"wheel_foot_{leg}.stl"), tolerance=0.02, angular_tolerance=0.1)
+        F.export_stl_stable(q, F.PRINT / f"wheel_foot_{leg}.stl", tolerance=0.02, angular_tolerance=0.1)
         F.export_step_stable(q, F.MODELS / f"wheel_foot_{leg}.step")
     print("print one each:", ", ".join(f"wheel_foot_{leg}.stl" for leg in feet))
     if not show:
@@ -292,7 +292,7 @@ def export_split(show=False):
     for leg, ps in feet.items():
         for k, q in ps.items():
             assert q.is_valid and len(q.solids()) == 1, (leg, k, len(q.solids()))
-            export_stl(q, str(F.PRINT / f"wheel_foot_{leg}_{k}.stl"), tolerance=0.02, angular_tolerance=0.1)
+            F.export_stl_stable(q, F.PRINT / f"wheel_foot_{leg}_{k}.stl", tolerance=0.02, angular_tolerance=0.1)
         print(f"{leg}: " + ", ".join(f"{k} {q.volume / 1000 * 1.27:.0f} g" for k, q in ps.items()))
     if show:
         from ocp_vscode import set_port, show as push
