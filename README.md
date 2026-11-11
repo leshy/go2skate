@@ -80,7 +80,7 @@ For one robot (four wheel feet), with the default config:
 | Part               | Spec                                                                             | Qty |
 |--------------------|----------------------------------------------------------------------------------|-----|
 | Printed wheel foot | `print/wheel_foot_{FL,FR,RL,RR}.stl`, one each (labelled), PETG                  | 4   |
-| Inline-skate wheel | **80 mm** diameter, about **24 mm** wide (designed for 24.5)                     | 4   |
+| [Inline-skate wheel](https://duckduckgo.com/?q=inline+skate+wheel&ia=images&iax=images) | **80 mm** diameter, about **24 mm** wide (designed for 24.5)                     | 4   |
 | Bearing            | **608** (8 x 22 x 7 mm), shielded: the standard skate bearing, two per wheel     | 8   |
 | Bearing spacer     | sits inside the wheel's hub between the two bearings                             | 4   |
 | Bearing insert     | 8 to 6 mm reducer, one in each bearing (for the M6 axle)                         | 8   |
