@@ -2,6 +2,8 @@
 
 Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulation model generated from it.
 
+The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still. The Go2 stands on them safely in sport mode, but they're well outside what its controller was trained for, so don't push it.
+
 <p>
   <img src="assets/model.png" width="47.5%" alt="The front-left wheel foot in the CAD viewer, with its wheel, bearings and axle">
   <img src="assets/mujoco_skate.png" width="50.5%" alt="The Go2 on its wheel feet in MuJoCo">
@@ -95,8 +97,6 @@ The feet print split in two by default, each half flat on its cut face with supp
 
 <img src="assets/print.png" width="49%" alt="Two halves of a wheel foot sliced, each on its cut face, the arm's flat outside up and tree supports (green) under the arm">
 
-The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still.
-
 ## License
 
-The code (`go2skate/`) is [GPL-3.0-or-later](LICENSE). The hardware design (`print/`, `models/`, `sim/generated/`, `assets/`) is [CERN-OHL-S-2.0](LICENSE-HARDWARE), the strongly reciprocal open hardware licence: modified designs, and feet made from them, must share their sources under it. The bundled Unitree Go2 model and DejaVu font keep their own licences, in `go2skate/data/`.
+The code (`go2skate/`) is [GPL-3.0-or-later](LICENSE). The hardware design (`print/`, `models/`, `sim/generated/`, `assets/`) is [CERN-OHL-S-2.0](LICENSE-HARDWARE). The bundled Unitree Go2 model and DejaVu font keep their own licences, in `go2skate/data/`.
