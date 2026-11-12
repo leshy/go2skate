@@ -164,11 +164,11 @@
             <geom size="0.013 0.06" pos="0.01 0 -0.06" quat="0.995004 0 -0.0998334 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="RL_skate">
-              <inertial pos="-0.00352299 1.85617e-05 -0.21509" mass="0.0534649" fullinertia="2.98949e-05 3.37495e-05 2.08315e-05 1.89206e-06 -8.5348e-06 -1.19283e-06" />
+              <inertial pos="-0.00352307 1.85617e-05 -0.21509" mass="0.0534651" fullinertia="2.98951e-05 3.37496e-05 2.08316e-05 -1.92198e-06 -8.53483e-06 1.14441e-06" />
               <geom mesh="skate_RL" material="petg" class="visual" />
               <body name="RL_wheel" pos="-0.0173408 0 -0.237825">
-                <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
-                <joint name="RL_wheel_joint" type="hinge" axis="-0.42632 0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
+                <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
+                <joint name="RL_wheel_joint" type="hinge" axis="0.42632 0.866025 -0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_RL" material="urethane" class="visual" />
                 <geom name="RL" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>
@@ -195,11 +195,11 @@
             <geom size="0.013 0.06" pos="0.01 0 -0.06" quat="0.995004 0 -0.0998334 0" type="cylinder" class="collision" />
             <geom size="0.011 0.0325" pos="0.02 0 -0.148" quat="0.999688 0 0.0249974 0" type="cylinder" class="collision" />
             <body name="RR_skate">
-              <inertial pos="-0.00352299 -1.85617e-05 -0.21509" mass="0.0534649" fullinertia="2.98949e-05 3.37495e-05 2.08315e-05 -1.89206e-06 -8.5348e-06 1.19283e-06" />
+              <inertial pos="-0.00352307 -1.85617e-05 -0.21509" mass="0.0534651" fullinertia="2.98951e-05 3.37496e-05 2.08316e-05 1.92198e-06 -8.53483e-06 -1.14441e-06" />
               <geom mesh="skate_RR" material="petg" class="visual" />
               <body name="RR_wheel" pos="-0.0173408 0 -0.237825">
-                <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 1.04361e-05 -3.14822e-06 -6.39528e-06" />
-                <joint name="RR_wheel_joint" type="hinge" axis="-0.42632 -0.866025 0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
+                <inertial pos="0 0 0" mass="0.09" fullinertia="4.12962e-05 5.73588e-05 3.8088e-05 -1.04361e-05 -3.14822e-06 6.39528e-06" />
+                <joint name="RR_wheel_joint" type="hinge" axis="0.42632 -0.866025 -0.261249" limited="false" damping="0.0001" frictionloss="0.001" armature="0" />
                 <geom mesh="wheel_RR" material="urethane" class="visual" />
                 <geom name="RR" group="3" condim="6" priority="1" friction="0.9 0.005 0.0008" solimp="0.9 0.95 0.001" type="sphere" size="0.04" />
               </body>

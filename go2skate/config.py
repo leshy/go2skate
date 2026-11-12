@@ -92,7 +92,7 @@ class Skate:
     sim: Sim = field(default_factory=Sim)
     fit: float = 0.15  # clearance a side in the axle holes: 6.3 for the M6 (the arms print with the hole on its side, so it closes
     # up). The M4s have Screws.fit, the calf tongue's slot foot.FIT
-    toe_deg: tuple = (30.0, -30.0, 30.0, -30.0)  # FL, FR, RL, RR: each wheel turned about its foot's own axis (~14° off vertical
+    toe_deg: tuple = (30.0, -30.0, -30.0, 30.0)  # FL, FR, RL, RR: each wheel turned about its foot's own axis (~14° off vertical
     # standing), + turns its front to the robot's left. V, every toe out like a skater's: (30, -30, 30, -30). X, each diagonal pair
     # on one line through the body's middle: (30, -30, -30, 30). All 0: straight
     label: bool = True  # engrave, under the axle, on both arms: the leg (FL, FR, RL, RR) and an arrow to the robot's front, so a
@@ -100,7 +100,7 @@ class Skate:
     name: str = ""  # the build's name, engraved: "" names it from toe_deg (V30, X30, S0 straight, else T)
     label_size: float = 5.0  # the text's size (its capitals ~0.73 of it): two lines fit the flat under the axle's seat
     label_depth: float = 1.0
-    split: bool = False  # print each foot in two halves, cut along the wheel's middle plane (no arm crosses it): each lies on its cut
+    split: bool = True  # print each foot in two halves, cut along the wheel's middle plane (no arm crosses it): each lies on its cut
     # face, its arm flat over the bed (support under the arm), layers along the arm. The M4s and the axle clamp the halves together
 
 

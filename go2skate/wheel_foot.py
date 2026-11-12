@@ -280,11 +280,14 @@ def export(show=False):
 
 
 def export_split(show=False):
-    """The feet in halves into print/: wheel_foot_{leg}_{outer,inner}.stl, laid as they print; with `show`, the FL foot's halves
-    together round its wheel in the OCP viewer, one colour each."""
+    """The feet in halves into print/: wheel_foot_{leg}_{outer,inner}.stl, laid as they print, and whole into models/ (STEP);
+    with `show`, the FL foot's halves together round its wheel in the OCP viewer, one colour each."""
     F.PRINT.mkdir(parents=True, exist_ok=True)
-    for old in F.PRINT.glob("wheel_foot*.stl"):
+    F.MODELS.mkdir(parents=True, exist_ok=True)
+    for old in [*F.PRINT.glob("wheel_foot*.stl"), *F.MODELS.glob("wheel_foot*.step")]:
         old.unlink()
+    for leg, q in legs().items():
+        F.export_step_stable(q, F.MODELS / f"wheel_foot_{leg}.step")
     feet = {leg: halves(leg) for leg in LEGS}
     for leg, ps in feet.items():
         for k, q in ps.items():

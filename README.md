@@ -37,7 +37,7 @@ uv run go2skate check --out builds/72mm
 
 ## Wheel layouts
 
-`toe_deg` in `go2skate/config.py` (or `--set toe_deg=30,-30,-30,30` for one build) turns each wheel about its foot's axis, in the order FL, FR, RL, RR. Positive turns the wheel's front to the robot's left. Seen from above, front up:
+`toe_deg` in `go2skate/config.py` (X30 by default, or `--set toe_deg=30,-30,30,-30` for V30 in one build) turns each wheel about its foot's axis, in the order FL, FR, RL, RR. Positive turns the wheel's front to the robot's left. Seen from above, front up:
 
 <img src="assets/layouts.svg" width="100%" alt="Seen from above, front up: Straight, every wheel along the body; V, every wheel toed out; X, each diagonal pair of wheels on one line through the body's middle">
 
@@ -79,7 +79,7 @@ For one robot (four wheel feet), with the default config:
 
 | Part               | Spec                                                                             | Qty |
 |--------------------|----------------------------------------------------------------------------------|-----|
-| Printed wheel foot | `print/wheel_foot_{FL,FR,RL,RR}.stl`, one each (labelled), PETG                  | 4   |
+| Printed wheel foot | `print/wheel_foot_{FL,FR,RL,RR}_{outer,inner}.stl`, one each (labelled), PETG    | 4   |
 | [Inline-skate wheel](https://duckduckgo.com/?q=inline+skate+wheel&ia=images&iax=images) | **80 mm** diameter, about **24 mm** wide (designed for 24.5)                     | 4   |
 | Bearing            | **608** (8 x 22 x 7 mm), shielded: the standard skate bearing, two per wheel     | 8   |
 | Bearing spacer     | sits inside the wheel's hub between the two bearings                             | 4   |
@@ -91,9 +91,7 @@ For one robot (four wheel feet), with the default config:
 
 ## Printing
 
-Print the feet split in two (`go2skate build --set split=true`) unless you print them in PPA-CF, PA-CF or something as tough between layers. Standing up in one piece, the layers run across the arms, and in PETG a foot broke cleanly along a layer at the arms' root.
-
-`split=true` cuts each foot along the wheel's middle plane: `print/wheel_foot_{leg}_outer.stl` and `_inner.stl`. Each half lies on its cut face with its arm flat over the bed, so the layers run along the arm. Put support under the arm (it stands ~13 mm off the bed), with an interface layer to keep the bearing's boss clean. The screws are the same: the M4s and the axle cross the cut and clamp the halves together.
+The feet print split in two by default, each half flat on its cut face with support under the arm, because a one-piece PETG foot breaks along a layer at the arm's root.
 
 <img src="assets/print.png" width="49%" alt="Two halves of a wheel foot sliced, each on its cut face, the arm's flat outside up and tree supports (green) under the arm">
 
