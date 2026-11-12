@@ -97,3 +97,6 @@ The feet print split in two by default, each half flat on its cut face with supp
 
 The wheel's bottom sits 48.5 mm under the stock foot's: a bigger wheel makes the legs effectively longer still.
 
+## License
+
+The code (`go2skate/`) is [GPL-3.0-or-later](LICENSE). The hardware design (`print/`, `models/`, `sim/generated/`, `assets/`) is [CERN-OHL-S-2.0](LICENSE-HARDWARE), the strongly reciprocal open hardware licence: modified designs, and feet made from them, must share their sources under it. The bundled Unitree Go2 model and DejaVu font keep their own licences, in `go2skate/data/`.

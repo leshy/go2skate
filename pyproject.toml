@@ -2,6 +2,8 @@
 name = "go2skate"
 version = "0.1.0"
 description = "Inline-skate wheel feet for the Unitree Go2: the printed part, and the MuJoCo model generated from it"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "LICENSE-HARDWARE"]
 requires-python = ">=3.12"
 dependencies = [
     "build123d==0.12.*",
