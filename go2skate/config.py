@@ -95,8 +95,8 @@ class Skate:
     toe_deg: tuple = (30.0, -30.0, 30.0, -30.0)  # FL, FR, RL, RR: each wheel turned about its foot's own axis (~14° off vertical
     # standing), + turns its front to the robot's left. V, every toe out like a skater's: (30, -30, 30, -30). X, each diagonal pair
     # on one line through the body's middle: (30, -30, -30, 30). All 0: straight
-    label: bool = True  # engrave, under the axle: on the fork's outer arm the build's name over the leg (FL, FR, RL, RR) and an
-    # arrow to the robot's front; on the other arm that foot's toe ("30° out")
+    label: bool = True  # engrave, under the axle, on both arms: the leg (FL, FR, RL, RR) and an arrow to the robot's front, so a
+    # split foot's halves pair up; over it, on the outer arm the build's name, on the other that foot's toe ("30° out")
     name: str = ""  # the build's name, engraved: "" names it from toe_deg (V30, X30, S0 straight, else T)
     label_size: float = 5.0  # the text's size (its capitals ~0.73 of it): two lines fit the flat under the axle's seat
     label_depth: float = 1.0

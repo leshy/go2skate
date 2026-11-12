@@ -157,29 +157,26 @@ def text(t, size):
 
 
 def label_cutter(leg):
-    """The leg's outer arm: the build's name, and under it the leg and an arrow to the robot's front (+X). The other arm: that
-    leg's toe. All under the axle's seat, in the round end's flat band (seat to chamfer)."""
-    s = 1 if leg[1] == "L" else -1
+    """Both arms, under the axle's seat, in the round end's flat band (seat to chamfer): the leg and an arrow to the robot's front
+    (+X), so the halves of a split foot pair up; over it, on the outer arm the build's name, on the other the leg's toe."""
     h = C.label_size
     top = AXLE_W - C.axle.washer_d / 2 - 0.6  # just under the axle's washer
     caps = 0.73 * h  # the font's capitals
     name_v, leg_v = top - caps / 2, top - 1.5 * caps - 0.8
-    fwd = -s  # +X (the robot's front), in the text plane's own x
-    arrow = Pos(fwd * 0.75 * h, 0) * Polygon(*[(fwd * x, y) for x, y in
-                                              [(-0.55 * h, 0.12 * h), (0.15 * h, 0.12 * h), (0.15 * h, 0.35 * h), (0.6 * h, 0.0),
-                                               (0.15 * h, -0.35 * h), (0.15 * h, -0.12 * h), (-0.55 * h, -0.12 * h)]], align=None)
-    leg_line = Pos(-fwd * 0.45 * h, 0) * text(leg, h) + arrow
-    leg_line = Pos(-leg_line.bounding_box().center().X, 0) * leg_line  # centred under the axle, like the name over it
-    outer = engraving(leg, True, [(text(build_name(), h), name_v), (leg_line, leg_v)])
+
+    def leg_line(outer):
+        fwd = -(1 if leg[1] == "L" else -1) * (1 if outer else -1)  # +X (the robot's front), in that arm's text plane's own x
+        arrow = Pos(fwd * 0.75 * h, 0) * Polygon(*[(fwd * x, y) for x, y in
+                                                  [(-0.55 * h, 0.12 * h), (0.15 * h, 0.12 * h), (0.15 * h, 0.35 * h), (0.6 * h, 0.0),
+                                                   (0.15 * h, -0.35 * h), (0.15 * h, -0.12 * h), (-0.55 * h, -0.12 * h)]], align=None)
+        line = Pos(-fwd * 0.45 * h, 0) * text(leg, h) + arrow
+        return Pos(-line.bounding_box().center().X, 0) * line  # centred under the axle
+
     r = C.fork.end_r - C.fork.end_chamfer  # the round end's flat
-    for size in np.arange(2.5 * h, h / 2, -0.25):  # the toe: as large as fits the band from the head to the chamfer, 1 mm in
-        t = text(toe_text(leg), size)
-        c, w = 0.73 * size, t.bounding_box().size.X
-        v = top - c / 2 if c < top - (AXLE_W - r) - 1.0 else None
-        if v is not None and w / 2 + 1.0 <= np.sqrt(max(r ** 2 - (AXLE_W - (v - c / 2)) ** 2, 0)):
-            break
-    other = engraving(leg, False, [(t, v)])
-    return outer + other
+    toe = text(toe_text(leg), h)
+    fits = toe.bounding_box().size.X / 2 + 1.0 <= np.sqrt(max(r ** 2 - (AXLE_W - (name_v - caps / 2)) ** 2, 0))
+    return (engraving(leg, True, [(text(build_name(), h), name_v), (leg_line(True), leg_v)])
+            + engraving(leg, False, [(toe, name_v)] * bool(fits) + [(leg_line(False), leg_v)]))  # the toe only where it fits
 
 
 def build_name():

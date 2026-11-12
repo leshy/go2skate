@@ -3,8 +3,8 @@
 Inline-skate wheel feet for the Unitree Go2: the printed part, and the simulation model generated from it.
 
 <p>
-  <img src="assets/model.png" width="49%" alt="The front-left wheel foot in the CAD viewer, with its wheel, bearings and axle">
-  <img src="assets/mujoco.png" width="49%" alt="The Go2 on its wheel feet in MuJoCo, standing in the home pose">
+  <img src="assets/model.png" width="47.5%" alt="The front-left wheel foot in the CAD viewer, with its wheel, bearings and axle">
+  <img src="assets/mujoco_skate.png" width="50.5%" alt="The Go2 on its wheel feet in MuJoCo">
 </p>
 <p>
   <img src="assets/go2.jpeg" width="99%" alt="The real Go2 lying down on parquet on four printed white wheel feet with red inline-skate wheels">
