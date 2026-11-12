@@ -23,11 +23,14 @@ MODELS, PRINT = config.OUT / "models", config.OUT / "print"  # CAD exports; what
 
 
 def export_step_stable(shape, path):
-    """STEP with a fixed timestamp in its header: OCCT writes the time, which dirtied git on every rerun."""
+    """STEP with a fixed timestamp in its header (OCCT writes the time, which dirtied git on every rerun) and its numbers cut to
+    9 decimals: their 12th differs from CPU to CPU, which failed CI's diff.
+    ponytail: cut, not rounded; a number right on a 9th-decimal boundary can still flip, as round_stl_normals."""
     import re
     export_step(shape, str(path))
     p = Path(path)
-    p.write_text(re.sub(r"(FILE_NAME\('[^']*',)'[^']*'", r"\1'2000-01-01T00:00:00'", p.read_text(), count=1))
+    t = re.sub(r"(FILE_NAME\('[^']*',)'[^']*'", r"\1'2000-01-01T00:00:00'", p.read_text(), count=1)
+    p.write_text(re.sub(r"(\d\.\d{9})\d+", r"\1", t))
 
 
 def round_stl_normals(path):
